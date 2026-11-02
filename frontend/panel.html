@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!--
+    Inclusive Tech · panel del hogar (pestanias Hogar y Usuarios)
+    Estructura de la pagina. Estilos en css/, comportamiento en js/.
+-->
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#090819">
+    <title>Inclusive Tech · Panel del hogar</title>
+    <link rel="icon" type="image/png" href="assets/inclusive-tech.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/users.css">
+</head>
+
+<body>
+    <!-- Degradados compartidos por las copias del logo -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="lg-roof" gradientUnits="userSpaceOnUse" x1="30" y1="0" x2="270" y2="0">
+                <stop offset="0" stop-color="#03d1fe" />
+                <stop offset=".5" stop-color="#3579f9" />
+                <stop offset="1" stop-color="#8559fa" />
+            </linearGradient>
+            <linearGradient id="lg-wall" gradientUnits="userSpaceOnUse" x1="60" y1="150" x2="150" y2="245">
+                <stop offset="0" stop-color="#03d1fe" />
+                <stop offset="1" stop-color="#5b66f9" />
+            </linearGradient>
+            <linearGradient id="lg-heart" gradientUnits="userSpaceOnUse" x1="130" y1="190" x2="245" y2="190">
+                <stop offset="0" stop-color="#2f6cf8" />
+                <stop offset=".5" stop-color="#8a6fe0" />
+                <stop offset="1" stop-color="#e475c8" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Inclusive Tech, volver al inicio">
+            <svg class="logo brand-mark" viewBox="14 28 270 240" aria-hidden="true">
+                <g fill="none" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="l-roof" pathLength="1" stroke="url(#lg-roof)" d="M31 153 158 44 263 131" />
+                    <path class="l-stub" pathLength="1" stroke="url(#lg-roof)" d="M268 137H228" />
+                    <path class="l-wall" pathLength="1" stroke="url(#lg-wall)" d="M64 142V222Q64 243 86 243H143" />
+                    <path class="l-heart" pathLength="1" stroke="url(#lg-heart)"
+                        d="M187 180C187 165 177 156 162 156C146 156 136 167 136 182C136 210 164 234 187 254C210 234 238 210 238 182C238 167 228 156 212 156C197 156 187 165 187 180Z" />
+                </g>
+            </svg>
+            <span><b>Inclusive Tech</b><small>Panel del hogar</small></span>
+        </a>
+        <nav aria-label="Principal">
+            <a href="#" data-tab="home" aria-current="page">Hogar</a>
+            <a href="#" data-tab="users">Usuarios</a>
+            <a href="#" data-tab="settings" class="is-soon">Configuración</a>
+            <a href="#" data-tab="help" class="is-soon">Ayuda</a>
+        </nav>
+        <div class="topbar-end">
+            <a class="btn btn-small" href="index.html">Inicio</a>
+        </div>
+    </header>
+
+    <div id="banner" class="banner" role="alert" hidden>
+        <span id="bannerText"></span>
+        <button id="bannerRetry" type="button">Reintentar</button>
+    </div>
+
+    <main id="stage" data-view="home">
+        <div id="side" aria-hidden="true">
+            <p id="hint">Elige una zona del plano para editarla aquí.</p>
+            <img id="sideMascot" src="assets/panitas.png" alt="" width="200" height="200">
+        </div>
+
+        <div id="stamp" role="status" aria-live="polite">
+            <span id="stampIcon">✓</span> <span id="stampText">Sin cambios pendientes</span>
+        </div>
+
+        <div id="area">
+            <div id="view">
+                <svg id="plan" viewBox="30 100 1430 850" role="group"
+                    aria-label="Plano de planta de la casa, vista desde arriba">
+                    <defs>
+                        <pattern id="hatch" width="16" height="16" patternUnits="userSpaceOnUse"
+                            patternTransform="rotate(45)">
+                            <line x1="0" y1="0" x2="0" y2="16" stroke="#f5f3f8" stroke-width="2.2" opacity=".28" />
+                        </pattern>
+                    </defs>
+                    <g id="layer-fill"></g>
+                    <g id="layer-furniture"></g>
+                    <g id="layer-walls" fill="none" stroke="#cdc4e7" stroke-linecap="round"
+                        stroke-linejoin="miter"></g>
+                    <g id="layer-selection"></g>
+                    <g id="layer-hit"></g>
+                    <g id="layer-labels"></g>
+                    <g id="layer-doors"></g>
+                </svg>
+            </div>
+        </div>
+
+        <div id="bottom">
+            <div id="searchWrap">
+                <div id="searchNote" role="status" hidden></div>
+                <ul id="suggestions" hidden></ul>
+                <form id="searchForm" role="search">
+                    <input id="searchInput" type="search" placeholder="Buscar zona o alias de voz…"
+                        aria-label="Buscar zona por nombre o alias" autocomplete="off">
+                    <button type="submit">Buscar</button>
+                </form>
+            </div>
+            <div id="controls">
+                <button id="zoomOut" type="button" aria-label="Alejar">−</button>
+                <span id="zoomLabel">100%</span>
+                <button id="zoomIn" type="button" aria-label="Acercar">+</button>
+                <button id="zoomReset" type="button">Centrar</button>
+                <button id="toggleNames" type="button">Ocultar nombres</button>
+            </div>
+        </div>
+
+        <svg id="overlay" aria-hidden="true">
+            <defs>
+                <mask id="connectorMask" maskUnits="userSpaceOnUse" x="0" y="0" width="3000" height="2000">
+                    <path id="connectorMaskPath" pathLength="1" stroke="#fff" stroke-width="10" fill="none" />
+                </mask>
+            </defs>
+            <path id="connectorLine" mask="url(#connectorMask)" fill="none" stroke="#fd7b50" stroke-width="3.4"
+                stroke-dasharray="0.1 9" stroke-linecap="round" />
+            <g id="pinStart">
+                <circle r="9" fill="#fd7b50" stroke="#090819" stroke-width="3" />
+                <circle cx="-3" cy="-3" r="2.6" fill="#ffd9cc" />
+            </g>
+            <circle id="pinEnd" r="5" fill="#f5f3f8" stroke="#fd7b50" stroke-width="2.5" />
+        </svg>
+
+        <aside id="ficha" aria-label="Ficha de la zona seleccionada">
+            <i id="fichaAnchor"></i>
+            <div class="ficha-head">
+                <span class="ficha-zone">Ficha · Zona <b id="fichaNumber"></b></span>
+                <button class="close-btn" id="fichaClose" type="button" aria-label="Cerrar ficha">×</button>
+            </div>
+
+            <div id="fichaEditable">
+                <section class="sec">
+                    <label class="sec-title" for="nameInput">Renombrar zona</label>
+                    <input id="nameInput" type="text" maxlength="40" autocomplete="off">
+                    <p class="field-error" id="nameError" role="alert" hidden></p>
+                </section>
+                <section class="sec">
+                    <span class="sec-title" id="aliasTitle">Alias de voz · <span id="aliasCount">0/5</span></span>
+                    <ul id="chips" aria-labelledby="aliasTitle"></ul>
+                    <p class="field-error" id="aliasError" role="alert" hidden></p>
+                </section>
+                <section class="sec">
+                    <span class="sec-title">Nombre técnico (Unity)</span>
+                    <code id="techName" class="tech-name"></code>
+                    <p class="note">Solo lectura: lo define el equipo de desarrollo.</p>
+                </section>
+            </div>
+
+            <div id="fichaMissing" hidden>
+                <section class="sec">
+                    <span class="sec-title">Zona sin registrar</span>
+                    <p id="missingText" class="note"></p>
+                    <p class="note" id="missingHint">Para activarla, registra en Unity un nodo de tipo habitación con el
+                        nombre técnico:</p>
+                    <code id="missingCode" class="tech-name"></code>
+                </section>
+            </div>
+        </aside>
+
+    </main>
+
+    <main id="usersView" class="users-view" data-view="users" hidden>
+        <section class="users-main">
+            <div class="users-head">
+                <div>
+                    <h1 class="users-title">Usuarios de la casa</h1>
+                    <p class="note">Personas registradas en el reconocimiento facial. Los usuarios nuevos solo se crean
+                        físicamente en la casa.</p>
+                </div>
+                <div class="users-actions">
+                    <button id="usersRefresh" class="btn" type="button">Actualizar</button>
+                    <button id="usersChangeKey" class="btn" type="button">Cambiar clave</button>
+                </div>
+            </div>
+
+            <section id="usersKey" class="key-card" hidden>
+                <span class="sec-title">Clave de acceso</span>
+                <p class="note">Pega la clave del archivo <code>admin_api_key.txt</code> (en la máquina donde corre la
+                    app de reconocimiento facial). Se guarda solo en este navegador.</p>
+                <form id="usersKeyForm" autocomplete="off">
+                    <input id="usersKeyInput" type="password" aria-label="Clave de acceso"
+                        placeholder="Clave de acceso">
+                    <button class="btn btn-primary" type="submit">Guardar</button>
+                </form>
+                <p class="field-error" id="usersKeyError" role="alert" hidden></p>
+            </section>
+
+            <p id="usersState" class="users-state" role="status" hidden></p>
+            <ul id="usersList" class="users-list"></ul>
+        </section>
+
+        <aside class="users-side" aria-label="Detalle del usuario">
+            <p id="usersSideHint" class="side-hint">Elige un usuario para ver su ficha.</p>
+            <img class="side-mascot" src="assets/panitas.png" alt="" width="200" height="200">
+            <div id="userDetail" class="user-detail" hidden>
+                <div class="ficha-head">
+                    <span class="ficha-zone">Ficha · Usuario <b id="userDetailId"></b></span>
+                    <button class="close-btn" id="userDetailClose" type="button" aria-label="Cerrar ficha">×</button>
+                </div>
+                <section class="sec">
+                    <label class="sec-title" for="userNameInput">Nombre</label>
+                    <input id="userNameInput" class="user-name-input" type="text" autocomplete="off">
+                    <p class="field-error" id="userNameError" role="alert" hidden></p>
+                </section>
+                <section class="sec">
+                    <span class="sec-title">Rol</span>
+                    <span id="userRole" class="user-role"></span>
+                </section>
+                <section class="sec">
+                    <span class="sec-title">Registrado el</span>
+                    <p id="userDate" class="user-value"></p>
+                </section>
+                <section class="sec danger-zone">
+                    <span class="sec-title">Eliminar usuario</span>
+                    <button id="userDeleteButton" class="btn btn-danger" type="button">Eliminar usuario…</button>
+                    <div id="userDeleteConfirm" hidden>
+                        <p class="note">Se borrará también su rostro registrado y saldrá del modelo de reconocimiento.
+                            Esta acción es definitiva.</p>
+                        <div class="confirm-actions">
+                            <button id="userDeleteYes" class="btn btn-danger" type="button">Sí, eliminar</button>
+                            <button id="userDeleteNo" class="btn" type="button">Cancelar</button>
+                        </div>
+                    </div>
+                    <p class="field-error" id="userDeleteError" role="alert" hidden></p>
+                </section>
+            </div>
+        </aside>
+    </main>
+
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- Compartidos -->
+    <script src="js/shared/feedback.js"></script>
+    <script src="js/shared/tabs.js"></script>
+    <script src="js/shared/forms.js"></script>
+
+    <!-- Pestana Hogar -->
+    <script src="js/home/nav-api.js"></script>
+    <script src="js/home/plan-data.js"></script>
+    <script src="js/home/plan-renderer.js"></script>
+    <script src="js/home/viewport.js"></script>
+    <script src="js/home/connector.js"></script>
+    <script src="js/home/home.js"></script>
+
+    <!-- Pestana Usuarios -->
+    <script src="js/users/users-api.js"></script>
+    <script src="js/users/users.js"></script>
+    
+    <!-- Arranque -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -7,7 +7,7 @@
 	* las estancias; nunca especifica como se llaman dichas estancias actualmente; esa
 	* informacion proviene del backend. 
 	*
-	* Vínculo Zona <-> backend:
+	* Vinculo Zona <-> backend:
 	*   Cada zona enumera "internalNames": Los nombres tecnicos (normalizados: mayusculas,
 	*   sin acentos, sin espacios ni simbolos) que puede tener un nodo de Unity. El primer nodo
 	*   del backend cuyo "internal_name" normalizado figure en esa lista se vincula a la zona.
@@ -77,7 +77,7 @@ const PlanData = (() => {
 	const ZONES = Object.freeze([{
 		id: "main-bedroom",
 		defaultName: "Cuarto Principal",
-		color: "#d9825b",
+		color: "#fd7b50",
 		internalNames: ["CUARTOPRINCIPAL", "HABITACIONPRINCIPAL", "DORMITORIOPRINCIPAL"],
 		outline: "M60 130H490V442H375V538H60Z",
 		origin: {
@@ -100,7 +100,7 @@ const PlanData = (() => {
 	}, {
 		id: "kitchen",
 		defaultName: "Cocina",
-		color: "#e3b23c",
+		color: "#b332a1",
 		internalNames: ["COCINA"],
 		outline: "M490 130H800V442H490Z",
 		origin: {
@@ -123,7 +123,7 @@ const PlanData = (() => {
 	}, {
 		id: "dining-room",
 		defaultName: "Comedor",
-		color: "#9bb08a",
+		color: "#8233b7",
 		internalNames: ["COMEDOR"],
 		outline: "M800 130H1110V442H800Z",
 		origin: {
@@ -146,7 +146,7 @@ const PlanData = (() => {
 	}, {
 		id: "living-room",
 		defaultName: "Sala",
-		color: "#7fa3bd",
+		color: "#b6add1",
 		internalNames: ["SALA", "SALADEESTAR"],
 		outline: "M375 442H1070V917H375Z",
 		origin: {
@@ -173,7 +173,7 @@ const PlanData = (() => {
 	}, {
 		id: "bathroom",
 		defaultName: "Baño",
-		color: "#9bb08a",
+		color: "#774aa7",
 		internalNames: ["BANO", "BANIO"],
 		outline: "M60 538H375V917H60Z",
 		origin: {
@@ -196,7 +196,7 @@ const PlanData = (() => {
 	}, {
 		id: "second-bedroom",
 		defaultName: "Cuarto Secundario",
-		color: "#d99a8f",
+		color: "#ec566a",
 		internalNames: ["CUARTOSECUNDARIO", "HABITACIONSECUNDARIA", "OFICINA"],
 		outline: "M1070 520H1432V917H1070Z",
 		origin: {

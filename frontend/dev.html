@@ -1,41 +1,92 @@
 <!doctype html>
+<!--
+    Inclusive Tech · panel de desarrollo (casas y dispositivos)
+    Requiere la clave de desarrollador. index.html la valida y la deja en sessionStorage antes de redirigir aqui.
+-->
 <html lang="es">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Panel de desarrollo · INCLUSIVE_TECH</title>
+    <meta name="theme-color" content="#090819">
+    <title>Inclusive Tech · Desarrollo</title>
+    <link rel="icon" type="image/png" href="assets/inclusive-tech.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/dev.css">
 </head>
 
 <body>
+    <!-- Degradados compartidos por las copias del logo -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="lg-roof" gradientUnits="userSpaceOnUse" x1="30" y1="0" x2="270" y2="0">
+                <stop offset="0" stop-color="#03d1fe" />
+                <stop offset=".5" stop-color="#3579f9" />
+                <stop offset="1" stop-color="#8559fa" />
+            </linearGradient>
+            <linearGradient id="lg-wall" gradientUnits="userSpaceOnUse" x1="60" y1="150" x2="150" y2="245">
+                <stop offset="0" stop-color="#03d1fe" />
+                <stop offset="1" stop-color="#5b66f9" />
+            </linearGradient>
+            <linearGradient id="lg-heart" gradientUnits="userSpaceOnUse" x1="130" y1="190" x2="245" y2="190">
+                <stop offset="0" stop-color="#2f6cf8" />
+                <stop offset=".5" stop-color="#8a6fe0" />
+                <stop offset="1" stop-color="#e475c8" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Inclusive Tech, volver al inicio">
+            <svg class="logo brand-mark" viewBox="14 28 270 240" aria-hidden="true">
+                <g fill="none" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="l-roof" pathLength="1" stroke="url(#lg-roof)" d="M31 153 158 44 263 131" />
+                    <path class="l-stub" pathLength="1" stroke="url(#lg-roof)" d="M268 137H228" />
+                    <path class="l-wall" pathLength="1" stroke="url(#lg-wall)" d="M64 142V222Q64 243 86 243H143" />
+                    <path class="l-heart" pathLength="1" stroke="url(#lg-heart)"
+                        d="M187 180C187 165 177 156 162 156C146 156 136 167 136 182C136 210 164 234 187 254C210 234 238 210 238 182C238 167 228 156 212 156C197 156 187 165 187 180Z" />
+                </g>
+            </svg>
+            <span><b>Inclusive Tech</b><small>Desarrollo</small></span>
+        </a>
+        <div class="topbar-end">
+            <a class="btn btn-small" href="panel.html">Panel del hogar</a>
+            <a class="btn btn-small" href="index.html">Inicio</a>
+        </div>
+    </header>
+
     <div id="banner" class="banner" role="alert" hidden>
         <span id="bannerText"></span>
         <button id="bannerRetry" type="button">Reintentar</button>
     </div>
 
-    <header class="topbar">
-        <div class="brand"><b>Panel de desarrollo</b></div>
-        <a class="dev-link" href="index.html">Ir al panel de usuario</a>
-    </header>
-
     <main class="dev-main">
-        <section class="dev-card" id="keyCard">
-            <h2>Clave de desarrollador</h2>
-            <p class="dev-hint">Esta en el archivo <code>backend/.env</code>. Es una única contraseña para
-                habilitar las funciones exclusivas de los desarrolladores.</p>
-            <form id="keyForm" class="dev-row">
-                <input id="keyInput" type="password" autocomplete="off" placeholder="Pega aqui la clave"
-                    aria-label="Clave de desarrollador">
-                <button type="submit" class="dev-btn">Entrar</button>
-                <button type="button" id="keyForget" class="dev-btn dev-btn--ghost" hidden>Olvidar clave</button>
-            </form>
+        <section class="dev-card dev-key" id="keyCard">
+            <span id="keyLock" class="lock-tile" data-lock="locked">
+                <svg class="lock" viewBox="0 0 48 48" aria-hidden="true">
+                    <path class="lock-shackle" d="M16 26V17a8 8 0 0 1 16 0v9" />
+                    <rect class="lock-body" x="9" y="24" width="30" height="20" rx="7" />
+                    <circle class="lock-hole" cx="24" cy="32.5" r="3" />
+                    <rect class="lock-hole" x="22.8" y="33" width="2.4" height="6" rx="1.2" />
+                </svg>
+            </span>
+            <div class="dev-key-body">
+                <h1 id="keyTitle">Clave de desarrollador</h1>
+                <p class="dev-hint">Está en el archivo <code>backend/.env</code>. Es una única contraseña que
+                    habilita las funciones exclusivas del equipo de desarrollo.</p>
+                <form id="keyForm" class="dev-row">
+                    <input id="keyInput" type="password" autocomplete="off" placeholder="Pega aquí la clave"
+                        aria-label="Clave de desarrollador" required
+                        data-msg-missing="Pega la clave para entrar.">
+                    <button type="submit" class="dev-btn">Entrar</button>
+                    <button type="button" id="keyForget" class="dev-btn dev-btn--ghost" hidden>Cerrar sesión</button>
+                </form>
+            </div>
         </section>
 
         <div id="workArea" hidden>
@@ -50,8 +101,9 @@
                 <section class="dev-card">
                     <h2>Crear casa</h2>
                     <form id="createForm" class="dev-grid">
-                        <label>Nombre <input id="createName" maxlength="100" required></label>
-                        <label>Descripcion <input id="createDescription" maxlength="300"></label>
+                        <label>Nombre <input id="createName" maxlength="100" required
+                                data-msg-missing="Ponle un nombre a la casa."></label>
+                        <label>Descripción <input id="createDescription" maxlength="300"></label>
                         <button type="submit" class="dev-btn">Crear casa</button>
                     </form>
                 </section>
@@ -59,17 +111,19 @@
                 <section class="dev-card">
                     <h2>Casas registradas</h2>
                     <div id="housesEmpty" class="dev-hint" hidden>No hay casas registradas.</div>
-                    <table class="dev-table" id="housesTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Nodos</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="housesBody"></tbody>
-                    </table>
+                    <div class="dev-table-wrap">
+                        <table class="dev-table" id="housesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Nodos</th>
+                                    <th><span class="visually-hidden">Acciones</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="housesBody"></tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
 
@@ -78,10 +132,10 @@
 
                 <section class="dev-card">
                     <h2>Registrar dispositivo</h2>
-                    <p class="dev-hint">Un dispositivo es una unidad que se controla. Por ejemplo, la luz de la sala puede ser UNO solo
-                        aunque tenga varias lámparas. Es como si se registrara el interrumptor que enciende y apaga las luces de cada habitación más no las luces como tal. 
-                        La clave es el identificador fijo que usará el ESP32 (no se puede
-                        cambiar después).</p>
+                    <p class="dev-hint">Un dispositivo es una unidad que se controla. Por ejemplo, la luz de la sala
+                        puede ser UNO solo aunque tenga varias lámparas: es como registrar el interruptor que
+                        enciende y apaga las luces de cada habitación, no las luces una por una. La clave es el
+                        identificador fijo que usará el ESP32 (no se puede cambiar después).</p>
                     <form id="devForm" class="dev-grid dev-grid--devices">
                         <label>Habitación <select id="devRoom" required></select></label>
                         <label>Tipo
@@ -90,10 +144,11 @@
                                 <option value="door">Puerta</option>
                             </select>
                         </label>
-                        <label>Clave (device_key) <input id="devKey" maxlength="50" pattern="[a-z0-9_]+"
-                                title="Solo minúsculas, números y guion bajo. Ejemplo: light_sala" required
-                                autocomplete="off"></label>
-                        <label>Nombre visible <input id="devName" maxlength="100" required autocomplete="off"></label>
+                        <label>Clave (device_key) <input id="devKey" maxlength="50" pattern="[a-z0-9_]+" required
+                                autocomplete="off" data-msg-missing="La clave es obligatoria, el ESP32 la usa para reconocer el dispositivo."
+                                data-msg-pattern="Solo minúsculas, números y guion bajo. Ejemplo: light_sala"></label>
+                        <label>Nombre visible <input id="devName" maxlength="100" required autocomplete="off"
+                                data-msg-missing="Escribe el nombre con el que se verá el dispositivo."></label>
                         <button type="submit" class="dev-btn">Registrar dispositivo</button>
                     </form>
                 </section>
@@ -101,18 +156,20 @@
                 <section class="dev-card">
                     <h2>Dispositivos de la casa activa</h2>
                     <div id="devicesEmpty" class="dev-hint" hidden>Aún no hay dispositivos registrados.</div>
-                    <table class="dev-table" id="devicesTable">
-                        <thead>
-                            <tr>
-                                <th>Habitación</th>
-                                <th>Tipo</th>
-                                <th>Clave</th>
-                                <th>Nombre visible</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="devicesBody"></tbody>
-                    </table>
+                    <div class="dev-table-wrap">
+                        <table class="dev-table" id="devicesTable">
+                            <thead>
+                                <tr>
+                                    <th>Habitación</th>
+                                    <th>Tipo</th>
+                                    <th>Clave</th>
+                                    <th>Nombre visible</th>
+                                    <th><span class="visually-hidden">Acciones</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="devicesBody"></tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
         </div>
@@ -122,8 +179,8 @@
         <form method="dialog" id="deleteForm">
             <h2>Eliminar casa</h2>
             <p id="deleteMessage"></p>
-            <p id="deleteActive" class="dev-warning" hidden>Esta es la casa ACTIVA. Si la eliminas, el sistema usara la
-                siguiente casa (la de menor ID) o quedara sin casa si no existe otra.</p>
+            <p id="deleteActive" class="dev-warning" hidden>Esta es la casa ACTIVA. Si la eliminas, el sistema usará la
+                siguiente casa (la de menor ID) o quedará sin casa si no existe otra.</p>
             <label>Escribe el nombre exacto para confirmar
                 <input id="deleteConfirm" autocomplete="off">
             </label>
@@ -164,6 +221,7 @@
 
     <script src="js/shared/feedback.js"></script>
     <script src="js/shared/tabs.js"></script>
+    <script src="js/shared/forms.js"></script>
     <script src="js/dev/dev-api.js"></script>
     <script src="js/dev/dev.js"></script>
     <script src="js/dev/devices.js"></script>

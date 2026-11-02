@@ -135,7 +135,7 @@ async function addAliasToNode(nodeId, alias) {
     *
     * @param {number} nodeId - ID del nodo propietario del alias.
     * @param {number} aliasId - ID del alias a eliminar.
-    * @returns {Promise<Object>} Mensaje de confirmación del backend.
+    * @returns {Promise<Object>} Mensaje de confirmacion del backend.
 */
 async function deleteAliasFromNode(nodeId, aliasId) {
     const response = await fetch(`${API_BASE_URL}/user/nodes/${nodeId}/aliases/${aliasId}`,

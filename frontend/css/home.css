@@ -1,15 +1,16 @@
 /* ============================================================================
-    Inclusive Tech - estilos de la pestana Hogar (plano de zonas)
-    Contenido: escenario, plano SVG, controles inferiores, ficha, sello de guardado
-    y responsive propio de Hogar. Depende de base.css.
+    Inclusive Tech · pestania Hogar (plano de zonas)
+    Escenario, plano SVG, controles de abajo, ficha de la zona y sello de
+    guardado. Depende de base.css.
 ============================================================================ */
 
-/* 4. Stage ---------------------------------------------------------------------- */
+/* 1. Escenario ------------------------------------------------------------------ */
 
 #stage {
 	position: relative;
-	height: max(600px, calc(100vh - 75px));
+	height: max(600px, calc(100vh - var(--header-height) - 1px));
 	overflow: hidden;
+	background: var(--ground); /* debe coincidir con GROUND_COLOR (plan-renderer.js) */
 }
 
 #area {
@@ -32,23 +33,42 @@
 	bottom: 0;
 	width: var(--side-width);
 	z-index: 4;
-	background: #ebe0c7;
-	border-left: 3px double var(--ink);
+	background: var(--surface);
+	border-left: 1px solid var(--line);
 }
 
 #hint {
 	position: absolute;
-	left: 44px;
-	right: 52px;
-	top: 150px;
+	left: 40px;
+	right: 48px;
+	top: 120px;
 	margin: 0;
-	font: 700 34px/1.2 var(--hand);
-	color: var(--ink-soft);
-	transition: opacity .4s;
+	font: 700 30px/1.15 var(--display);
+	letter-spacing: -.02em;
+	color: var(--text-dim);
+	transition: opacity .3s var(--ease-out);
 }
 
-#stage.has-picked #hint {
+#stage.has-picked #hint,
+#stage.has-picked #sideMascot {
 	opacity: 0;
+}
+
+#sideMascot {
+	position: absolute;
+	right: 32px;
+	bottom: 32px;
+	width: 200px;
+	height: 200px;
+	opacity: .9;
+	transition: opacity .3s var(--ease-out);
+	animation: mascot-float 6s ease-in-out infinite alternate;
+}
+
+@keyframes mascot-float {
+	to {
+		translate: 0 -8px;
+	}
 }
 
 #view {
@@ -59,7 +79,7 @@
 }
 
 #view.is-animated {
-	transition: transform .45s cubic-bezier(.2, .7, .2, 1);
+	transition: transform .45s var(--ease-in-out);
 }
 
 #plan {
@@ -67,7 +87,7 @@
 	height: auto;
 }
 
-/* 5. Plan (SVG) ---------------------------------------------------------------- */
+/* 2. Plano (SVG) ----------------------------------------------------------------- */
 
 .ink {
 	stroke-dasharray: 1;
@@ -93,17 +113,38 @@
 }
 
 .zone-fill {
-	transition: fill-opacity .45s;
+	fill-opacity: .5;
+	transition: fill-opacity .3s var(--ease-out);
 }
 
 .zone-outline,
-.zone-furniture,
+.zone-furniture {
+	transition: opacity .3s var(--ease-out);
+}
+
 .zone-label {
-	transition: opacity .4s;
+	transition: opacity .3s var(--ease-out), transform .25s var(--ease-out);
+}
+
+/* Hover de zona: relleno mas intenso y etiqueta elevada */
+.zone-fill.is-hover {
+	fill-opacity: .74;
+}
+
+.zone-label.is-hover {
+	transform: translateY(-5px);
+}
+
+.has-selection .zone-fill.is-hover:not(.is-picked) {
+	fill-opacity: .42;
+}
+
+.zone-fill.is-picked {
+	fill-opacity: .8;
 }
 
 .has-selection .zone-fill:not(.is-picked) {
-	fill-opacity: .16;
+	fill-opacity: .14;
 }
 
 .has-selection .zone-outline:not(.is-picked) {
@@ -120,7 +161,7 @@
 
 .zone-hatch {
 	opacity: 0;
-	transition: opacity .4s;
+	transition: opacity .3s var(--ease-out);
 }
 
 .zone-hatch.is-picked {
@@ -129,15 +170,15 @@
 
 .zone-select {
 	fill: none;
-	stroke: var(--ink);
-	stroke-width: 13;
+	stroke: var(--coral);
+	stroke-width: 12;
 	stroke-linejoin: round;
 	opacity: 0;
-	transition: opacity .3s, stroke-width .3s;
+	transition: opacity .2s var(--ease-out), stroke-width .2s var(--ease-out);
 }
 
 .zone-select.is-hover {
-	opacity: .5;
+	opacity: .55;
 	stroke-width: 7;
 }
 
@@ -170,28 +211,35 @@
 }
 
 .zone-label text {
-	fill: var(--ink);
-	stroke: rgba(243, 234, 216, .92);
+	fill: var(--text);
+	stroke: rgba(9, 8, 25, .85);
 	stroke-width: 7px;
 	paint-order: stroke;
 	stroke-linejoin: round;
 }
 
 .label-name {
-	font: 700 34px var(--serif);
+	font: 700 34px var(--display);
+	letter-spacing: -.01em;
 }
 
 .label-alias {
-	font: 700 38px var(--hand);
+	font: 600 30px var(--sans);
+	fill: var(--lilac);
+}
+
+.zone-label .label-alias {
+	fill: var(--lilac);
 }
 
 .label-marker {
-	font: 700 20px var(--sans);
-	letter-spacing: .12em;
+	font: 700 19px var(--sans);
+	letter-spacing: .08em;
 }
 
 .zone-label.is-active .label-name {
 	text-decoration: underline;
+	text-decoration-color: var(--coral);
 	text-decoration-thickness: 3px;
 	text-underline-offset: 6px;
 }
@@ -209,16 +257,16 @@
 }
 
 .door-text {
-	font: 700 32px var(--hand);
-	fill: #f3ead8;
+	font: 700 28px var(--sans);
+	fill: #f5f3f8;
 }
 
-/* 6. Controles inferiores (busqueda + zoom) ----------------------------------------- */
+/* 3. Controles de abajo (busqueda y zoom) ------------------------------------------- */
 
 #bottom {
 	position: absolute;
 	left: 28px;
-	right: calc(var(--side-width)+ 28px);
+	right: calc(var(--side-width) + 28px);
 	bottom: 22px;
 	z-index: 8;
 	display: flex;
@@ -236,15 +284,16 @@
 	position: relative;
 	z-index: 10;
 	display: flex;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: var(--card);
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: var(--surface);
 	overflow: hidden;
+	transition: border-color .16s ease, box-shadow .16s ease;
 }
 
 #searchForm:focus-within {
-	outline: 3px solid var(--ink);
-	outline-offset: 3px;
+	border-color: var(--coral);
+	box-shadow: 0 0 0 3px rgba(253, 123, 80, .28);
 }
 
 #searchInput {
@@ -252,11 +301,17 @@
 	min-width: 0;
 	min-height: 52px;
 	border: 0;
+	border-radius: 0;
 	background: transparent;
 	font: 500 18px var(--sans);
-	padding: 0 16px;
-	color: var(--ink);
+	padding: 0 20px;
+	color: var(--text);
 	outline: none;
+	box-shadow: none;
+}
+
+#searchInput:focus-visible {
+	box-shadow: none;
 }
 
 /* Boton de borrar (x) del campo de busqueda */
@@ -269,51 +324,77 @@
 	margin: 0 10px 0 4px;
 	cursor: pointer;
 	border-radius: 50%;
-	background: center / 100% no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='12' fill='none' stroke='%231b2a41' stroke-width='2'/%3E%3Cpath d='M9.5 9.5l9 9M18.5 9.5l-9 9' stroke='%231b2a41' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-}
-
-#searchInput::-webkit-search-cancel-button:hover {
-	background-color: var(--rose);
+	background: center / 100% no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='12' fill='none' stroke='%23b6add1' stroke-width='2'/%3E%3Cpath d='M9.5 9.5l9 9M18.5 9.5l-9 9' stroke='%23b6add1' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 #searchForm button {
 	min-height: 52px;
-	padding: 0 20px;
+	padding: 0 24px;
 	border: 0;
-	border-left: 2px solid var(--ink);
-	background: var(--mustard);
+	background: var(--coral);
+	color: var(--accent-ink);
 	font: 700 17px var(--sans);
+	transition: background-color .16s ease;
 }
 
-#searchForm button:hover {
-	background: var(--sage);
+#searchForm button:active {
+	background: #e86a40;
 }
 
+/* Apertura hacia abajo por defecto; home.js agrega .opens-up si no caben */
 #searchNote,
 #suggestions {
 	position: absolute;
 	left: 0;
-	bottom: calc(100%+ 14px);
+	top: calc(100% + 10px);
 	z-index: 9;
+	overflow-y: auto;
+	transform-origin: 28px top;
+	opacity: 1;
+	scale: 1;
+	transition: opacity .16s var(--ease-out), scale .16s var(--ease-out), translate .16s var(--ease-out);
+}
+
+#searchNote.opens-up,
+#suggestions.opens-up {
+	top: auto;
+	bottom: calc(100% + 10px);
+	transform-origin: 28px bottom;
+}
+
+/* Estado inicial de la entrada */
+@starting-style {
+	#searchNote,
+	#suggestions {
+		opacity: 0;
+		scale: .97;
+		translate: 0 -6px;
+	}
+	#searchNote.opens-up,
+	#suggestions.opens-up {
+		translate: 0 6px;
+	}
 }
 
 #searchNote {
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	padding: 10px 16px;
-	font: italic 500 18px var(--serif);
+	background: var(--surface-2);
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius-sm);
+	padding: 12px 16px;
+	font: 500 17px var(--sans);
 	max-width: 100%;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
 }
 
 #suggestions {
 	list-style: none;
 	margin: 0;
-	padding: 4px;
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
+	padding: 6px;
+	background: var(--surface-2);
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius);
 	min-width: 100%;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
 }
 
 #suggestions button {
@@ -321,15 +402,26 @@
 	width: 100%;
 	text-align: left;
 	min-height: 48px;
-	padding: 0 12px;
+	padding: 0 14px;
 	border: 0;
+	border-radius: var(--radius-sm);
 	background: none;
 	font: 500 17px var(--sans);
 }
 
-#suggestions button:hover,
-#suggestions button:focus-visible {
-	background: var(--mustard);
+#suggestions button:focus-visible,
+#suggestions button.is-active {
+	background: var(--surface-3);
+	outline-offset: -3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	#suggestions button:hover {
+		background: var(--surface-3);
+	}
+	#searchForm button:hover {
+		background: #ff8d66;
+	}
 }
 
 #controls {
@@ -343,24 +435,34 @@
 #controls button {
 	min-width: 52px;
 	min-height: 52px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: var(--card);
-	font: 700 17px var(--sans);
-	padding: 0 16px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: var(--surface);
+	font: 600 16px var(--sans);
+	padding: 0 18px;
+	transition: transform .16s var(--ease-out), background-color .16s ease, border-color .16s ease;
 }
 
-#controls button:hover {
-	background: var(--mustard);
+#controls button:active {
+	transform: scale(.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	#controls button:hover {
+		background: var(--surface-3);
+		border-color: var(--lilac);
+	}
 }
 
 #zoomLabel {
-	font: 700 18px var(--sans);
+	font: 600 17px var(--sans);
+	font-variant-numeric: tabular-nums;
 	min-width: 56px;
 	text-align: center;
+	color: var(--text-dim);
 }
 
-/* Superposición de conectores */
+/* Superposicion de conectores */
 
 #overlay {
 	position: absolute;
@@ -381,44 +483,54 @@
 	animation: draw .9s .1s ease both;
 }
 
-/* 7. Ficha --------------------------------------------------------------------- */
+/* 4. Ficha de la zona ---------------------------------------------------------------- */
 
 #ficha {
 	position: absolute;
-	right: 48px;
-	top: 20px;
-	width: 380px;
+	right: 36px;
+	top: 24px;
+	width: 348px;
 	z-index: 7;
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	padding: 22px 22px 8px;
-	box-shadow: 5px 5px 0 rgba(27, 42, 65, .18);
+	background: var(--surface-2);
+	border: 1px solid var(--line-strong);
+	border-radius: 24px;
+	padding: 22px 24px 8px;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
 	opacity: 0;
 	visibility: hidden;
-	transform: translateX(26px) rotate(1.6deg);
-	transition: opacity .5s, transform .55s cubic-bezier(.2, .7, .2, 1), visibility 0s .55s;
+	transform: translateX(20px);
+	transition: opacity .26s var(--ease-out), transform .3s var(--ease-out), visibility 0s .3s;
 }
 
 #ficha.is-visible {
 	opacity: 1;
 	visibility: visible;
-	transform: rotate(-.8deg);
+	transform: none;
 	transition-delay: 0s;
 }
 
-#ficha::before {
-	content: "";
-	position: absolute;
-	top: -15px;
-	left: 50%;
-	width: 120px;
-	height: 30px;
-	margin-left: -60px;
-	background: rgba(227, 178, 60, .78);
-	transform: rotate(2deg);
-	border-left: 2px dashed rgba(27, 42, 65, .25);
-	border-right: 2px dashed rgba(27, 42, 65, .25);
+/* Entrada escalonada de las secciones de la ficha */
+#ficha.is-visible .sec {
+	animation: rise-in .34s var(--ease-out) backwards;
+}
+
+#ficha.is-visible .sec:nth-child(2) {
+	animation-delay: 60ms;
+}
+
+#ficha.is-visible .sec:nth-child(3) {
+	animation-delay: 110ms;
+}
+
+#ficha.is-visible .sec:nth-child(4) {
+	animation-delay: 160ms;
+}
+
+@keyframes rise-in {
+	from {
+		opacity: 0;
+		translate: 0 10px;
+	}
 }
 
 #fichaAnchor {
@@ -433,27 +545,24 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 6px;
+	margin-bottom: 8px;
 }
 
 .ficha-zone {
-	font: italic 500 17px var(--serif);
+	font: 500 16px var(--sans);
+	color: var(--text-dim);
 }
 
 .ficha-zone b {
-	font: 700 24px var(--serif);
-	font-style: normal;
+	font: 700 26px var(--display);
+	color: var(--text);
 }
 
 #nameInput {
 	width: 100%;
 	min-height: 54px;
-	font: 700 24px var(--serif);
-	color: var(--ink);
-	background: var(--paper);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	padding: 0 14px;
+	font: 700 22px var(--display);
+	background: var(--ground);
 }
 
 #chips {
@@ -469,25 +578,23 @@
 	display: flex;
 	align-items: center;
 	min-height: 48px;
-	padding: 0 4px 0 14px;
-	border: 1.5px solid var(--ink);
-	border-radius: 3px;
-	font: 700 23px var(--hand);
-	background: var(--mustard);
+	padding: 0 4px 0 16px;
+	border-radius: 999px;
+	font: 600 17px var(--sans);
+	background: var(--violet-900);
+	color: var(--text);
 }
 
 .chip:nth-child(4n+2) {
-	background: var(--sage);
-	transform: rotate(1.2deg);
+	background: var(--violet-700);
 }
 
 .chip:nth-child(4n+3) {
-	background: var(--blue);
-	transform: rotate(-1deg);
+	background: #5b1f4d;
 }
 
 .chip:nth-child(4n) {
-	background: var(--rose);
+	background: var(--surface-3);
 }
 
 .chip button {
@@ -495,54 +602,75 @@
 	height: 40px;
 	border: 0;
 	background: none;
-	font-size: 24px;
+	font-size: 22px;
 	border-radius: 50%;
+	transition: background-color .16s ease;
 }
 
-.chip button:hover {
-	background: rgba(27, 42, 65, .18);
+.chip button:active {
+	background: rgba(245, 243, 248, .24);
 }
 
 .chip input {
-	font: 700 22px var(--hand);
 	width: 150px;
 	min-height: 44px;
 	border: 0;
 	background: transparent;
-	color: var(--ink);
+	font: 600 17px var(--sans);
+	color: var(--text);
 	outline: none;
+	box-shadow: none;
 }
 
 .add-chip {
 	width: 52px;
 	height: 48px;
-	border: 2px dashed var(--ink);
-	border-radius: 3px;
+	border: 1px dashed var(--line-strong);
+	border-radius: 999px;
 	background: none;
-	font: 700 28px var(--sans);
+	font: 600 26px var(--sans);
+	transition: transform .16s var(--ease-out), background-color .16s ease, border-color .16s ease;
 }
 
-.add-chip:hover {
-	background: var(--mustard);
+.add-chip:active {
+	transform: scale(.94);
 }
 
-/* Sello de guardado */
+@media (hover: hover) and (pointer: fine) {
+	.chip button:hover {
+		background: rgba(245, 243, 248, .18);
+	}
+	.add-chip:hover {
+		background: var(--surface-3);
+		border-color: var(--lilac);
+	}
+}
+
+/* 5. Sello de guardado ---------------------------------------------------------------- */
 
 #stamp {
 	position: absolute;
-	left: 30px;
-	top: 16px;
+	left: 28px;
+	top: 20px;
 	z-index: 8;
-	font: 700 24px var(--hand);
-	border: 3px double var(--ink);
-	border-radius: 8px;
-	padding: 4px 16px;
-	transform: rotate(-3deg);
-	background: var(--paper);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	padding: 0 16px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	background: var(--surface);
+	font: 600 15px var(--sans);
+	color: var(--text-dim);
+}
+
+#stampIcon {
+	color: var(--ok);
 }
 
 #stamp.is-saving {
-	opacity: .6;
+	opacity: .65;
 }
 
 #stamp.is-failed {
@@ -550,19 +678,23 @@
 	color: var(--danger);
 }
 
+#stamp.is-failed #stampIcon {
+	color: var(--danger);
+}
+
 #stamp.is-pop {
-	animation: pop .5s;
+	animation: pop .26s var(--ease-out);
 }
 
 @keyframes pop {
-	30% {
-		transform: rotate(-5deg) scale(1.1);
+	40% {
+		transform: scale(1.06);
 	}
 }
 
-/* Responsive de Hogar
+/* 6. Responsive de Hogar
     Escritorio (>1100px): plano + panel lateral, los controles siguen al plano (los fija JS).
-    Apilado (<=1100px): sello, plano, controles y ficha fluyen de arriba hacia abajo. 
+    Apilado (<=1100px): sello, plano, controles y ficha fluyen de arriba hacia abajo.
 */
 
 @media (max-width: 1100px) {
@@ -578,15 +710,12 @@
 		position: relative;
 		left: auto;
 		top: auto;
-		display: inline-block;
 		margin: 14px 16px 0;
-		font-size: 20px;
 	}
 	#area {
 		position: relative;
 		inset: auto;
-		height: 360px;
-		/* la altura real la fija viewport.js */
+		height: 360px; /* la altura real la fija viewport.js */
 	}
 	#bottom {
 		position: relative;
@@ -628,7 +757,7 @@
 	#controls button {
 		min-width: 48px;
 		min-height: 48px;
-		padding: 0 12px;
+		padding: 0 14px;
 		font-size: 15px;
 	}
 }

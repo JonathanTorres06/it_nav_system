@@ -17,7 +17,7 @@
 
 	// --- Constantes ---------------------------------------
 	const MAX_NAME_LENGTH = 40;
-	const AVATAR_COLORS = ["var(--mustard)", "var(--sage)", "var(--blue)", "var(--rose)"];
+	const AVATAR_COLORS = ["var(--coral)", "var(--lilac)", "var(--rose)", "var(--text-dim)"];
 	const ROLE_ADMIN = "Administrador";
 	const ROLE_RESIDENT = "Residente";
 	const DATE_LOCALE = "es-CO";
@@ -60,7 +60,11 @@
 	// ============================================================================
 
 	const roleOf = (user) => (user.isAdmin ? ROLE_ADMIN : ROLE_RESIDENT);
-	const errorText = (error) => (error && error.message) ? error.message : "Error desconocido";
+	// fetch lanza TypeError (mensaje en ingles) cuando no hay conexion
+	const errorText = (error) => {
+		if (error instanceof TypeError) return "Revisa que el backend esté encendido (puerto 8001).";
+		return (error && error.message) ? error.message : "Error desconocido";
+	};
 	const findUser = (id) => users.find((u) => u.id === id) || null;
 
 	function formatDate(date) {
@@ -147,6 +151,7 @@
 		try {
 			users = await fetchUsers();
 			setState(users.length ? "" : "Todavía no hay usuarios registrados. Se crean desde la casa, con el reconocimiento facial.");
+			enterList();
 			renderList();
 			if (selectedId !== null && !findUser(selectedId)) closeDetail();
 			else if (selectedId !== null) renderDetail();
@@ -155,6 +160,12 @@
 		} finally {
 			isLoading = false;
 		}
+	}
+
+	/** Entrada escalonada de la lista; solo al cargar, no en cada renderList */
+	function enterList() {
+		dom.list.classList.add("is-entering");
+		setTimeout(() => dom.list.classList.remove("is-entering"), 900);
 	}
 
 	function renderList() {

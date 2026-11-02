@@ -18,11 +18,14 @@ const Viewport = (() => {
 	const DRAG_THRESHOLD_PX = 5;
 	const KEEP_VISIBLE_PX = 140;
 	const MIN_PLAN_WIDTH = 480;
-	const MAX_PLAN_WIDTH = 980;
+	const MAX_PLAN_WIDTH = 1100;
 	const SIDE_MARGIN_PX = 60;
-	const BOTTOM_RESERVED_PX = 150;
+	// Espacio reservado bajo la barra de busqueda para la lista de sugerencias
+	const DROPDOWN_ROOM_PX = 170;
+	// Altura no disponible para el plano: margen superior (56) + separacion (28) + barra (52) + DROPDOWN_ROOM_PX
+	const BOTTOM_RESERVED_PX = 306;
 	const ANIMATION_MS = 480;
-	const CONTROLS_GAP_PX = 4; // El SVG del plano ya tiene unos 20 pixeles de margen en blanco
+	const CONTROLS_GAP_PX = 28; // Separacion entre el plano y la barra inferior (el SVG ya incluye ~20 px de margen)
 	const MIN_TOP_PX = 56; // Evita que aparezca la marca de guardado
 	const STACKED_QUERY = "(max-width: 1100px)";
 	const STACKED_MARGIN_PX = 12;
@@ -59,7 +62,7 @@ const Viewport = (() => {
 		ty = Math.min(area.clientHeight - KEEP_VISIBLE_PX, Math.max(KEEP_VISIBLE_PX - h, ty));
 	}
 
-	/** Ajusta el plano, lo vuelve a centrar (ampliación al 100 %) y coloca los controles */
+	/** Ajusta el plano, lo vuelve a centrar (ampliacion al 100 %) y coloca los controles */
 	function layout() {
 		const stacked = window.matchMedia(STACKED_QUERY).matches;
 		const aw = area.clientWidth;
@@ -83,7 +86,8 @@ const Viewport = (() => {
 			planHeight = (planWidth * vb().height) / vb().width;
 			const groupHeight = planHeight + CONTROLS_GAP_PX + controlsHeight;
 			tx = (aw - planWidth) / 2;
-			ty = Math.max(MIN_TOP_PX, (ah - groupHeight) / 2);
+			// Grupo centrado en el espacio restante tras reservar DROPDOWN_ROOM_PX
+			ty = MIN_TOP_PX + Math.max(0, (ah - groupHeight - DROPDOWN_ROOM_PX - MIN_TOP_PX) / 2);
 			controls.style.bottom = "auto";
 			controls.style.top = `${Math.min(ty + planHeight + CONTROLS_GAP_PX, ah - controlsHeight - 12)}px`;
 		}

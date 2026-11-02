@@ -1,8 +1,7 @@
 /* ============================================================================
-    Inclusive Tech - estilos de la pestana Usuarios
-    Contenido: distribucion (lista + panel lateral), tarjetas de usuario,
-    ficha de detalle, tarjeta de clave de acceso y responsive.
-    Depende de base.css (tokens y componentes compartidos).
+    Inclusive Tech · pestania Usuarios
+    Lista de personas, panel lateral con su ficha y la tarjeta de la clave
+    de acceso. Los botones y campos vienen de base.css.
 ============================================================================ */
 
 /* 1. Distribucion ---------------------------------------------------------------- */
@@ -11,25 +10,40 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: 1fr var(--side-width);
-	min-height: max(600px, calc(100vh - 75px));
+	min-height: max(600px, calc(100vh - var(--header-height) - 1px));
 }
 
 .users-main {
-	padding: 28px 36px 40px;
+	padding: 36px var(--gutter) 40px;
 	min-width: 0;
 }
 
 .users-side {
 	position: relative;
-	background: #ebe0c7;
-	border-left: 3px double var(--ink);
-	padding: 28px 48px 40px;
+	background: var(--surface);
+	border-left: 1px solid var(--line);
+	padding: 32px 36px 40px;
 }
 
 .side-hint {
-	margin: 120px 0 0;
-	font: 700 34px/1.2 var(--hand);
-	color: var(--ink-soft);
+	margin: 88px 0 0;
+	font: 700 30px/1.15 var(--display);
+	letter-spacing: -.02em;
+	color: var(--text-dim);
+}
+
+.side-mascot {
+	position: absolute;
+	right: 32px;
+	bottom: 32px;
+	width: 200px;
+	height: 200px;
+	opacity: .9;
+}
+
+.users-side:has(.user-detail.is-visible) .side-hint,
+.users-side:has(.user-detail.is-visible) .side-mascot {
+	display: none;
 }
 
 .users-head {
@@ -38,16 +52,19 @@
 	align-items: flex-start;
 	gap: 16px;
 	flex-wrap: wrap;
-	margin-bottom: 22px;
+	margin-bottom: 28px;
 }
 
 .users-title {
 	margin: 0;
-	font: 700 34px/1.1 var(--serif);
+	font: 800 clamp(2rem, 3.4vw, 2.75rem)/1 var(--display);
+	letter-spacing: -.03em;
 }
 
 .users-head .note {
-	max-width: 560px;
+	max-width: 56ch;
+	margin-top: 12px;
+	font-size: 17px;
 }
 
 .users-actions {
@@ -56,73 +73,35 @@
 	flex-wrap: wrap;
 }
 
-.btn {
-	min-height: 48px;
-	padding: 0 18px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: var(--card);
-	font: 700 16px var(--sans);
-}
-
-.btn:hover {
-	background: var(--mustard);
-}
-
-.btn-primary {
-	background: var(--mustard);
-}
-
-.btn-primary:hover {
-	background: var(--sage);
-}
-
-.btn-danger {
-	background: var(--card);
-	border-color: var(--danger);
-	color: var(--danger);
-}
-
-.btn-danger:hover {
-	background: var(--danger);
-	color: var(--card);
-}
-
 .users-state {
 	margin: 8px 0 18px;
-	font: italic 500 19px var(--serif);
-	color: var(--ink-soft);
+	font: 500 18px var(--sans);
+	color: var(--text-dim);
 }
 
 /* 2. Tarjeta de clave de acceso ---------------------------------------------------- */
 
 .key-card {
 	max-width: 520px;
-	margin: 0 0 24px;
-	padding: 20px 22px;
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	box-shadow: 5px 5px 0 rgba(27, 42, 65, .18);
+	margin: 0 0 28px;
+	padding: 22px 24px;
+	background: var(--surface);
+	border: 1px solid var(--line-strong);
+	border-radius: 20px;
 }
 
 .key-card form {
 	display: flex;
 	gap: 10px;
 	flex-wrap: wrap;
-	margin-top: 10px;
+	margin-top: 14px;
 }
 
 .key-card input {
 	flex: 1 1 220px;
 	min-width: 0;
-	min-height: 48px;
-	padding: 0 14px;
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	background: var(--paper);
-	font: 500 17px ui-monospace, Consolas, monospace;
-	color: var(--ink);
+	font-family: var(--mono);
+	font-size: 16px;
 }
 
 /* 3. Lista de usuarios -------------------------------------------------------------- */
@@ -136,29 +115,58 @@
 	gap: 16px;
 }
 
+/* Entrada escalonada de tarjetas; users.js agrega .is-entering solo al cargar la lista */
+.users-list.is-entering > li {
+	animation: card-in .38s var(--ease-out) backwards;
+}
+
+.users-list.is-entering > li:nth-child(2) { animation-delay: 45ms; }
+.users-list.is-entering > li:nth-child(3) { animation-delay: 90ms; }
+.users-list.is-entering > li:nth-child(4) { animation-delay: 135ms; }
+.users-list.is-entering > li:nth-child(5) { animation-delay: 180ms; }
+.users-list.is-entering > li:nth-child(n+6) { animation-delay: 225ms; }
+
+@keyframes card-in {
+	from {
+		opacity: 0;
+		translate: 0 12px;
+		scale: .97;
+	}
+}
+
 .user-card {
 	display: flex;
 	align-items: center;
 	gap: 14px;
 	width: 100%;
-	min-height: 84px;
-	padding: 12px 16px;
+	min-height: 88px;
+	padding: 14px 18px;
 	text-align: left;
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	box-shadow: 4px 4px 0 rgba(27, 42, 65, .14);
-	transition: transform .2s, box-shadow .2s;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: 20px;
+	color: var(--text);
+	transition: transform .16s var(--ease-out), background-color .16s ease, border-color .16s ease;
 }
 
-.user-card:hover {
-	transform: translateY(-2px);
-	box-shadow: 6px 6px 0 rgba(27, 42, 65, .18);
+.user-card:active {
+	transform: scale(.98);
 }
 
 .user-card.is-selected {
-	background: #fff9e8;
-	box-shadow: 6px 6px 0 var(--ink);
+	background: var(--surface-3);
+	border-color: var(--coral);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.user-card:hover {
+		background: var(--surface-2);
+		border-color: var(--line-strong);
+	}
+	.user-card.is-selected:hover {
+		background: var(--surface-3);
+		border-color: var(--coral);
+	}
 }
 
 .user-avatar {
@@ -167,9 +175,9 @@
 	place-items: center;
 	width: 52px;
 	height: 52px;
-	border: 2px solid var(--ink);
 	border-radius: 50%;
-	font: 700 26px var(--serif);
+	color: var(--ground);
+	font: 800 24px var(--display);
 }
 
 .user-info {
@@ -180,7 +188,8 @@
 }
 
 .user-name {
-	font: 700 22px/1.1 var(--serif);
+	font: 700 21px/1.1 var(--display);
+	letter-spacing: -.01em;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -188,61 +197,43 @@
 
 .user-role {
 	align-self: flex-start;
-	padding: 2px 10px;
-	border: 1.5px solid var(--ink);
-	border-radius: 20px;
-	font: 700 12px var(--sans);
-	letter-spacing: .08em;
-	text-transform: uppercase;
-	background: var(--paper);
+	flex: none;
+	padding: 3px 12px;
+	border-radius: 999px;
+	font: 600 13px var(--sans);
+	white-space: nowrap;
+	background: var(--surface-3);
+	color: var(--text-dim);
 }
 
 .user-role.is-admin {
-	background: var(--mustard);
+	background: var(--coral);
+	color: var(--accent-ink);
 }
 
 /* 4. Ficha de detalle --------------------------------------------------------------- */
 
 .user-detail {
 	position: relative;
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	padding: 22px 22px 8px;
-	box-shadow: 5px 5px 0 rgba(27, 42, 65, .18);
+	background: var(--surface-2);
+	border: 1px solid var(--line-strong);
+	border-radius: 24px;
+	padding: 22px 24px 8px;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
 	opacity: 0;
-	transform: translateX(26px) rotate(1.6deg);
-	transition: opacity .5s, transform .55s cubic-bezier(.2, .7, .2, 1);
+	transform: translateX(20px);
+	transition: opacity .26s var(--ease-out), transform .3s var(--ease-out);
 }
 
 .user-detail.is-visible {
 	opacity: 1;
-	transform: rotate(-.8deg);
-}
-
-.user-detail::before {
-	content: "";
-	position: absolute;
-	top: -15px;
-	left: 50%;
-	width: 120px;
-	height: 30px;
-	margin-left: -60px;
-	background: rgba(227, 178, 60, .78);
-	transform: rotate(2deg);
-	border-left: 2px dashed rgba(27, 42, 65, .25);
-	border-right: 2px dashed rgba(27, 42, 65, .25);
+	transform: none;
 }
 
 .user-name-input {
 	width: 100%;
 	min-height: 54px;
-	font: 700 24px var(--serif);
-	color: var(--ink);
-	background: var(--paper);
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	padding: 0 14px;
+	font: 700 22px var(--display);
 }
 
 .user-value {
@@ -252,7 +243,7 @@
 
 .user-detail .user-role {
 	display: inline-block;
-	font-size: 13px;
+	font-size: 14px;
 }
 
 .danger-zone .note {
@@ -273,14 +264,15 @@
 		min-height: 0;
 	}
 	.users-main {
-		padding: 20px 16px 8px;
+		padding: 24px var(--gutter) 8px;
 	}
 	.users-side {
 		border-left: 0;
-		border-top: 3px double var(--ink);
+		border-top: 1px solid var(--line);
 		padding: 28px 16px 32px;
 	}
-	.side-hint {
+	.side-hint,
+	.side-mascot {
 		display: none;
 	}
 	.user-detail {
@@ -293,9 +285,6 @@
 }
 
 @media (max-width: 700px) {
-	.users-title {
-		font-size: 28px;
-	}
 	.users-list {
 		grid-template-columns: 1fr;
 	}

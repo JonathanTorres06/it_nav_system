@@ -12,7 +12,9 @@
 	const $ = (id) => document.getElementById(id);
 	const keyForm = $("keyForm"),
 		keyInput = $("keyInput"),
-		keyForget = $("keyForget");
+		keyForget = $("keyForget"),
+		keyCard = $("keyCard"),
+		keyTitle = $("keyTitle");
 	const workArea = $("workArea"),
 		activeWarning = $("activeWarning");
 	const housesBody = $("housesBody"),
@@ -35,6 +37,10 @@
 	function setUnlocked(unlocked) {
 		workArea.hidden = !unlocked;
 		keyForget.hidden = !unlocked;
+		// sesion abierta: tarjeta de clave en modo compacto
+		keyCard.classList.toggle("is-unlocked", unlocked);
+		$("keyLock").dataset.lock = unlocked ? "open" : "locked";
+		keyTitle.textContent = unlocked ? "Sesión de desarrollo abierta" : "Clave de desarrollador";
 	}
 
 	/** Traduce un error a un aviso visible */
@@ -42,7 +48,12 @@
 		if (error.kind === "unauthorized") {
 			DevApi.KeyStore.clear();
 			setUnlocked(false);
-			Toast.show("Clave incorrecta. Revisa data/dev_access_key.txt");
+			// error junto al campo y animacion del candado
+			Fields.error(keyInput, "Esa clave no abre la puerta. Revisa que sea la de backend/.env.");
+			const lock = $("keyLock");
+			lock.classList.remove("is-rattle");
+			void lock.offsetWidth;
+			lock.classList.add("is-rattle");
 			return;
 		}
 		Banner.show(error.message, error.kind === "network" ? refresh : null);
@@ -56,7 +67,7 @@
 		activeWarning.hidden = !(noHouses || manyHouses);
 
 		if (noHouses) {
-			activeWarning.textContent = "Atencion: no hay ninguna casa registrada, el sistema de navegacion no funcionara. Crea una abajo.";
+			activeWarning.textContent = "Atención: no hay ninguna casa registrada, el sistema de navegación no funcionará. Crea una abajo.";
 		} else if (manyHouses) {
 			activeWarning.textContent = "Hay varias casas. El sistema usa solo la activa (la de menor ID); las demas no se ven en el panel de usuario.";
 		}
@@ -126,7 +137,7 @@
 	keyForget.addEventListener("click", () => {
 		DevApi.KeyStore.clear();
 		setUnlocked(false);
-		Toast.show("Clave olvidada en este navegador.");
+		Toast.show("Sesión cerrada. La clave ya no está en este navegador.");
 	});
 
 	createForm.addEventListener("submit", async(event) => {
@@ -144,7 +155,7 @@
 	function openDeleteDialog(house) {
 		pendingDelete = house;
 		deleteMessage.textContent =
-			`Se eliminara "${house.name}" con sus ${house.node_count} nodos, alias y conexiones. No se puede deshacer.`;
+			`Se eliminará "${house.name}" con sus ${house.node_count} nodos, alias y conexiones. No se puede deshacer.`;
 		deleteActive.hidden = !house.is_active;
 		deleteConfirm.value = "";
 		deleteOk.disabled = true;

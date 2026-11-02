@@ -1,149 +1,354 @@
 /* ============================================================================
-    Inclusive Tech - estilos base (compartidos por todas las pestanas)
-    Contenido: tokens de diseno, base, encabezado, componentes compartidos
-    (campos, botones, fichas), avisos (toast, banner) y responsive del encabezado.
+    Inclusive Tech · base compartida
+    Tokens, tipografia, barra superior, botones, campos, fichas y avisos.
+    Usada por index.html, panel.html y dev.html.
+    Colores tomados de la paleta de Panitas.
 ============================================================================ */
 
-/* 1. Design tokens ---------------------------------------------------------- */
+/* 1. Tokens ----------------------------------------------------------------- */
 
 :root {
-	--paper: #f3ead8;
-	--card: #fbf6e9;
-	--ink: #1b2a41;
-	--ink-soft: #3a4a62;
-	--mustard: #e3b23c;
-	--sage: #9bb08a;
-	--blue: #8fb0c9;
-	--rose: #d99a8f;
-	--danger: #a8321f;
-	--serif: Fraunces, Georgia, 'Times New Roman', serif;
-	--hand: Caveat, 'Comic Sans MS', cursive;
-	--sans: 'DM Sans', system-ui, sans-serif;
-	--side-width: 440px;
-	--header-height: 72px;
-	color-scheme: light;
+	/* Paleta Panitas */
+	--ground: #090819;
+	--surface: #120e29;
+	--surface-2: #1b1438;
+	--surface-3: #281254;
+	--line: rgba(205, 196, 231, .16);
+	--line-strong: rgba(205, 196, 231, .34);
+
+	--text: #f5f3f8;
+	--text-dim: #b6add1;
+	--text-faint: #8a7fb0;
+
+	--violet-900: #49176d;
+	--violet-700: #6a2292;
+	--violet-500: #8233b7;
+	--violet-400: #774aa7;
+	--coral: #fd7b50;
+	--ember: #eb4d2e;
+	--rose: #ec566a;
+	--magenta: #c63c78;
+	--plum: #b332a1;
+	--lilac: #cdc4e7;
+
+	/* Roles */
+	--accent: var(--coral);
+	--accent-ink: #1a0a14;
+	--danger: #ff7d8e;
+	--ok: #8be0b0;
+
+	/* Tipografia */
+	--display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+	--sans: Figtree, 'Segoe UI', system-ui, sans-serif;
+	--mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+	/* Medidas */
+	--side-width: 420px;
+	--header-height: 68px;
+	--radius: 14px;
+	--radius-sm: 10px;
+	--gutter: 32px;
+
+	/* Movimiento */
+	--ease-out: cubic-bezier(.23, 1, .32, 1);
+	--ease-in-out: cubic-bezier(.77, 0, .175, 1);
+
+	color-scheme: dark;
 }
 
-/* 2. Base --------------------------------------------------------------------- */
+/* 2. Base ------------------------------------------------------------------- */
 
 * {
 	box-sizing: border-box;
 }
 
-body {
-	margin: 0;
-	background: var(--paper);
-	color: var(--ink);
-	font-family: var(--sans);
+html {
+	background: var(--ground);
 }
 
-body::before {
-	/* paper grain */
-	content: "";
-	position: fixed;
-	inset: 0;
-	pointer-events: none;
-	z-index: 50;
-	opacity: .5;
-	mix-blend-mode: multiply;
-	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .15 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+body {
+	margin: 0;
+	min-height: 100vh;
+	background: var(--ground);
+	color: var(--text);
+	font: 400 17px/1.5 var(--sans);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+::selection {
+	background: var(--coral);
+	color: var(--accent-ink);
 }
 
 :focus-visible {
-	outline: 3px solid var(--ink);
+	outline: 3px solid var(--coral);
 	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/* Barras de desplazamiento */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--violet-700) transparent;
 }
 
 button {
 	font-family: inherit;
-	color: var(--ink);
+	color: inherit;
 	cursor: pointer;
+}
+
+input,
+select {
+	font-family: inherit;
+}
+
+code {
+	font: 500 .88em var(--mono);
 }
 
 [hidden] {
 	display: none !important;
 }
 
-/* 3. Header ------------------------------------------------------------------- */
+h1,
+h2,
+h3 {
+	font-family: var(--display);
+	text-wrap: balance;
+}
+
+/* 3. Barra superior ---------------------------------------------------------- */
 
 .topbar {
+	position: relative;
+	z-index: 20;
 	height: var(--header-height);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 36px;
-	border-bottom: 3px double var(--ink);
+	gap: 24px;
+	padding: 0 var(--gutter);
+	background: var(--ground);
+	border-bottom: 1px solid var(--line);
 }
 
 .brand {
 	display: flex;
 	gap: 12px;
 	align-items: center;
+	color: inherit;
+	text-decoration: none;
+	flex: none;
+}
+
+.brand img {
+	width: 38px;
+	height: 38px;
+	display: block;
 }
 
 .brand b {
-	font: 700 30px/1 var(--serif);
-	letter-spacing: -.5px;
+	display: block;
+	font: 700 22px/1 var(--display);
+	letter-spacing: -.02em;
 }
 
 .brand small {
 	display: block;
-	font: 500 12px var(--sans);
-	letter-spacing: .18em;
-	text-transform: uppercase;
-	color: var(--ink-soft);
-	margin-top: 5px;
+	margin-top: 4px;
+	font: 500 13px/1 var(--sans);
+	color: var(--text-dim);
 }
 
-nav {
+.topbar nav {
 	display: flex;
-	gap: 4px;
+	gap: 2px;
+	align-self: stretch;
 }
 
-nav a {
+.topbar nav a {
+	position: relative;
 	min-height: 48px;
-	padding: 0 20px;
+	padding: 0 18px;
+	align-self: center;
 	display: flex;
 	align-items: center;
-	font: 500 17px var(--sans);
-	color: var(--ink);
+	gap: 8px;
+	font: 500 16px var(--sans);
+	color: var(--text-dim);
 	text-decoration: none;
-	border-bottom: 3px solid transparent;
+	border-radius: 999px;
+	transition: color .16s ease, background-color .16s ease;
 }
 
-nav a:hover,
-nav a[aria-current="page"] {
-	border-color: var(--ink);
+.topbar nav a[aria-current="page"] {
+	color: var(--text);
+	background: var(--surface-2);
 }
 
-/* 4. Componentes compartidos ---------------------------------------------------- */
+.topbar nav a.is-soon::after {
+	content: "pronto";
+	font: 600 11px var(--sans);
+	padding: 2px 7px;
+	border-radius: 999px;
+	background: var(--surface-3);
+	color: var(--text-dim);
+}
+
+.topbar-end {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.topbar nav a:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+}
+
+/* 4. Botones ----------------------------------------------------------------- */
+
+.btn {
+	min-height: 48px;
+	padding: 0 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--text);
+	font: 600 16px var(--sans);
+	text-decoration: none;
+	transition: transform .16s var(--ease-out), background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.btn:active {
+	transform: scale(.97);
+}
+
+.btn:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+}
+
+.btn-primary {
+	background: var(--coral);
+	border-color: var(--coral);
+	color: var(--accent-ink);
+}
+
+.btn-danger {
+	border-color: var(--danger);
+	color: var(--danger);
+}
+
+.btn-small {
+	min-height: 40px;
+	padding: 0 14px;
+	font-size: 15px;
+}
+
+/* Barrido de relleno en hover. El origen del clip-path sale de --px / --py (feedback.js) */
+.btn,
+.dev-btn {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.btn::after,
+.dev-btn::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--surface-3);
+	clip-path: circle(0 at var(--px, 50%) var(--py, 50%));
+	transition: clip-path .42s var(--ease-out);
+}
+
+.btn-primary::after,
+.dev-btn:not(.dev-btn--ghost):not(.dev-btn--danger)::after {
+	background: #ffa386;
+}
+
+.btn-danger::after,
+.dev-btn--danger::after {
+	background: var(--danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.btn:hover::after,
+	.dev-btn:hover:not(:disabled)::after {
+		clip-path: circle(150% at var(--px, 50%) var(--py, 50%));
+	}
+	.btn:hover {
+		border-color: var(--lilac);
+	}
+	.btn-primary:hover {
+		border-color: #ffa386;
+	}
+	.btn-danger:hover,
+	.dev-btn--danger:hover:not(:disabled) {
+		color: var(--accent-ink);
+	}
+}
 
 .close-btn {
 	width: 48px;
 	height: 48px;
-	border: 2px solid var(--ink);
+	flex: none;
+	border: 1px solid var(--line-strong);
 	border-radius: 50%;
 	background: none;
-	font-size: 26px;
+	font-size: 24px;
 	line-height: 1;
+	transition: transform .16s var(--ease-out), background-color .16s ease;
 }
 
-.close-btn:hover {
-	background: var(--rose);
+.close-btn:active {
+	transform: scale(.94);
 }
 
-.sec {
-	border-top: 1.5px solid var(--ink);
-	padding: 12px 0 16px;
+@media (hover: hover) and (pointer: fine) {
+	.close-btn:hover {
+		background: var(--surface-3);
+	}
 }
 
-.sec-title {
-	display: block;
-	font: 700 13px var(--sans);
-	letter-spacing: .14em;
-	text-transform: uppercase;
-	color: var(--ink-soft);
-	margin-bottom: 9px;
+/* 5. Campos ------------------------------------------------------------------ */
+
+input[type="text"],
+input[type="password"],
+input[type="search"],
+input:not([type]),
+select {
+	min-height: 48px;
+	padding: 0 14px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius-sm);
+	background: var(--ground);
+	color: var(--text);
+	font: 400 17px var(--sans);
+	transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+input::placeholder {
+	color: var(--text-faint);
+}
+
+input:focus-visible,
+select:focus-visible {
+	outline: none;
+	border-color: var(--coral);
+	box-shadow: 0 0 0 3px rgba(253, 123, 80, .28);
 }
 
 .field-error {
@@ -152,23 +357,38 @@ nav a[aria-current="page"] {
 	color: var(--danger);
 }
 
-.note {
-	margin: 6px 0 0;
-	font: italic 500 16px var(--serif);
-	color: var(--ink-soft);
+/* 6. Fichas y secciones ------------------------------------------------------- */
+
+.sec {
+	padding: 16px 0 18px;
+	border-top: 1px solid var(--line);
 }
 
-.note+ .tech-name {
+.sec-title {
+	display: block;
+	margin-bottom: 10px;
+	font: 600 14px var(--sans);
+	color: var(--text-dim);
+}
+
+.note {
+	margin: 6px 0 0;
+	font: 400 15px/1.5 var(--sans);
+	color: var(--text-dim);
+}
+
+.note+.tech-name {
 	margin-top: 14px;
 }
 
 .tech-name {
 	display: inline-block;
 	padding: 6px 10px;
-	background: var(--paper);
-	border: 1.5px dashed var(--ink);
-	border-radius: 3px;
-	font: 500 15px ui-monospace, Consolas, monospace;
+	background: var(--ground);
+	border: 1px dashed var(--line-strong);
+	border-radius: 8px;
+	font: 500 15px var(--mono);
+	color: var(--lilac);
 	word-break: break-all;
 }
 
@@ -177,20 +397,30 @@ nav a[aria-current="page"] {
 	pointer-events: none;
 }
 
-/* 5. Avisos: toast y banner ------------------------------------------------------ */
+/* 7. Avisos: toast y banner ---------------------------------------------------- */
 
 #toast {
 	position: fixed;
 	left: 50%;
 	bottom: 24px;
-	transform: translateX(-50%);
-	z-index: 10;
-	background: var(--ink);
-	color: var(--paper);
-	padding: 12px 22px;
-	border-radius: 6px;
-	font: 500 17px var(--sans);
-	max-width: 80%;
+	z-index: 60;
+	max-width: min(560px, calc(100% - 32px));
+	padding: 14px 22px;
+	border-radius: var(--radius-sm);
+	background: var(--text);
+	color: var(--ground);
+	font: 600 16px var(--sans);
+	box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+	translate: -50% 0;
+	opacity: 1;
+	transition: opacity .24s var(--ease-out), translate .24s var(--ease-out);
+}
+
+@starting-style {
+	#toast {
+		opacity: 0;
+		translate: -50% 12px;
+	}
 }
 
 .banner {
@@ -198,57 +428,538 @@ nav a[aria-current="page"] {
 	gap: 16px;
 	align-items: center;
 	justify-content: center;
+	flex-wrap: wrap;
 	padding: 10px 16px;
-	background: var(--rose);
-	border-bottom: 2px solid var(--ink);
-	font: 500 17px var(--sans);
+	background: #3a0f2a;
+	border-bottom: 1px solid var(--rose);
+	color: var(--text);
+	font: 500 16px var(--sans);
 }
 
 .banner button {
 	min-height: 40px;
 	padding: 0 16px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: var(--card);
-	font: 700 16px var(--sans);
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: transparent;
+	font: 600 15px var(--sans);
+	transition: transform .16s var(--ease-out), background-color .16s ease;
 }
 
-/* 6. Responsive del encabezado y movimiento reducido ---------------------------- */
+.banner button:active {
+	transform: scale(.97);
+}
 
-@media (max-width: 1100px) {
-	.topbar {
-		padding: 0 14px;
+@media (hover: hover) and (pointer: fine) {
+	.banner button:hover {
+		background: var(--surface-3);
 	}
 }
 
-@media (max-width: 700px) {
+/* 8. Dialogos (los usan el hub y el panel dev) ---------------------------------- */
+
+.dialog,
+.dev-dialog {
+	width: min(480px, calc(100% - 32px));
+	padding: 28px;
+	border: 1px solid var(--line-strong);
+	border-radius: 24px;
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: 0 32px 80px rgba(0, 0, 0, .6);
+	opacity: 1;
+	scale: 1;
+	transition: opacity .18s var(--ease-out), scale .18s var(--ease-out), overlay .18s allow-discrete, display .18s allow-discrete;
+}
+
+.dialog[open],
+.dev-dialog[open] {
+	@starting-style {
+		opacity: 0;
+		scale: .96;
+	}
+}
+
+.dialog::backdrop,
+.dev-dialog::backdrop {
+	background: rgba(9, 8, 25, .72);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.dialog h2,
+.dev-dialog h2 {
+	margin: 0 0 8px;
+	font: 700 28px/1.1 var(--display);
+	letter-spacing: -.02em;
+}
+
+.dialog label,
+.dev-dialog label {
+	display: grid;
+	gap: 6px;
+	margin-top: 16px;
+	font: 600 15px var(--sans);
+	color: var(--text-dim);
+}
+
+.dialog .dialog-actions,
+.dev-dialog .dev-row {
+	margin-top: 22px;
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+/* 9. Logo (SVG) ----------------- */
+
+.logo {
+	display: block;
+	overflow: visible;
+}
+
+.logo path {
+	stroke-dasharray: 1;
+	stroke-dashoffset: 0;
+}
+
+.logo .l-heart {
+	transform-box: fill-box;
+	transform-origin: 50% 60%;
+}
+
+/* Animacion de trazo: se activa con .is-drawing en el svg o en un ancestro */
+.is-drawing .logo path,
+.logo.is-drawing path {
+	animation: logo-draw var(--draw, .8s) var(--ease-in-out) backwards;
+	animation-delay: var(--d, 0s);
+}
+
+.is-drawing .l-wall,
+.logo.is-drawing .l-wall {
+	--d: calc(var(--t0, 0s) + .2s);
+}
+
+.is-drawing .l-stub,
+.logo.is-drawing .l-stub {
+	--d: calc(var(--t0, 0s) + .55s);
+	--draw: .25s;
+}
+
+.is-drawing .l-heart,
+.logo.is-drawing .l-heart {
+	--d: calc(var(--t0, 0s) + .7s);
+	--draw: .6s;
+}
+
+.is-drawing .l-roof,
+.logo.is-drawing .l-roof {
+	--d: var(--t0, 0s);
+}
+
+@keyframes logo-draw {
+	from {
+		stroke-dashoffset: 1;
+		opacity: 0;
+	}
+	1% {
+		opacity: 1;
+	}
+}
+
+/* Latido: doble pulso */
+.logo.is-beating .l-heart,
+.brand:hover .l-heart,
+.brand:focus-visible .l-heart {
+	animation: heartbeat .9s var(--ease-out);
+}
+
+@keyframes heartbeat {
+	0% {
+		scale: 1;
+	}
+	14% {
+		scale: 1.16;
+	}
+	28% {
+		scale: 1;
+	}
+	42% {
+		scale: 1.1;
+	}
+	70% {
+		scale: 1;
+	}
+}
+
+.brand-mark {
+	width: 42px;
+	height: 39px;
+	flex: none;
+	view-transition-name: brand-mark;
+}
+
+/* 10. Candado ------------------- */
+
+.lock-tile {
+	--lock: var(--lilac);
+	flex: none;
+	width: 84px;
+	height: 84px;
+	display: grid;
+	place-items: center;
+	border-radius: 26px;
+	background: var(--surface-2);
+	border: 1px solid var(--line-strong);
+	color: var(--lock);
+	transition: background-color .3s var(--ease-out), border-color .3s var(--ease-out), color .3s var(--ease-out), scale .3s var(--ease-out);
+}
+
+.lock-tile .lock {
+	width: 52px;
+	height: 52px;
+	overflow: visible;
+}
+
+.lock-shackle {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 4;
+	stroke-linecap: round;
+	transform-box: view-box;
+	transform-origin: 16px 26px; /* pivote en la pata izquierda del arco */
+	transition: transform .45s var(--ease-out);
+}
+
+.lock-body {
+	fill: currentColor;
+}
+
+.lock-hole {
+	fill: var(--surface-2);
+	transition: fill .3s var(--ease-out);
+}
+
+[data-lock="open"] {
+	--lock: var(--coral);
+	background: rgba(253, 123, 80, .12);
+	border-color: rgba(253, 123, 80, .5);
+}
+
+[data-lock="open"] .lock-shackle {
+	transform: translate(1px, -6px) rotate(-16deg);
+}
+
+[data-lock="open"] .lock-hole {
+	fill: #2a0f10;
+}
+
+.lock-tile.is-rattle .lock {
+	animation: rattle .42s var(--ease-out);
+}
+
+@keyframes rattle {
+	15% {
+		rotate: -9deg;
+	}
+	35% {
+		rotate: 8deg;
+	}
+	55% {
+		rotate: -5deg;
+	}
+	75% {
+		rotate: 3deg;
+	}
+}
+
+.lock-tile.is-pulse {
+	animation: lock-pulse .5s var(--ease-out);
+}
+
+@keyframes lock-pulse {
+	40% {
+		scale: 1.1;
+	}
+}
+
+/* 11. Flecha ------------------------------- */
+
+.arrow {
+	flex: none;
+	overflow: visible;
+}
+
+.arrow path {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.arrow .a-shaft {
+	transform-box: fill-box;
+	transform-origin: 100% 50%;
+	scale: .55 1;
+	transition: scale .28s var(--ease-out);
+}
+
+.arrow .a-head {
+	transition: translate .28s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	:is(.btn, .door, .dev-btn):hover .arrow .a-shaft,
+	:is(.btn, .door):focus-visible .arrow .a-shaft {
+		scale: 1 1;
+	}
+	:is(.btn, .door, .dev-btn):hover .arrow .a-head {
+		translate: 3px 0;
+	}
+}
+
+/* 12. Estados de boton: cargando y hecho ------------------------------------------------- */
+
+.btn.is-loading,
+.dev-btn.is-loading {
+	pointer-events: none;
+	opacity: .85;
+}
+
+.btn.is-loading::before,
+.dev-btn.is-loading::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	border: 2.5px solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: spin .7s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		rotate: 360deg;
+	}
+}
+
+.btn.is-done {
+	pointer-events: none;
+}
+
+.btn.is-done::before {
+	content: "";
+	width: 18px;
+	height: 18px;
+	margin-right: 8px;
+	background: currentColor;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5l5 5L20 6.5' pathLength='1' stroke-dasharray='1' stroke-dashoffset='0'/%3E%3C/svg%3E") center / contain no-repeat;
+	animation: pop-in .3s var(--ease-out);
+}
+
+@keyframes pop-in {
+	from {
+		scale: .4;
+		opacity: 0;
+	}
+}
+
+/* 13. Mensajes de error de campo --------------------- */
+
+.field-msg {
+	flex-basis: 100%;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin: 8px 0 0;
+	font: 500 15px/1.35 var(--sans);
+	color: var(--danger);
+	animation: msg-in .22s var(--ease-out);
+}
+
+.field-msg::before {
+	content: "";
+	flex: none;
+	width: 18px;
+	height: 18px;
+	margin-top: 1px;
+	background: currentColor;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9.5'/%3E%3Cpath d='M12 7.5v5.5M12 16.6v.1'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@keyframes msg-in {
+	from {
+		opacity: 0;
+		translate: 0 -6px;
+	}
+}
+
+[aria-invalid="true"] {
+	border-color: var(--danger) !important;
+	box-shadow: 0 0 0 3px rgba(255, 125, 142, .22);
+}
+
+.is-shake {
+	animation: shake .34s var(--ease-out);
+}
+
+@keyframes shake {
+	18% {
+		translate: -8px 0;
+	}
+	42% {
+		translate: 7px 0;
+	}
+	66% {
+		translate: -4px 0;
+	}
+	88% {
+		translate: 2px 0;
+	}
+}
+
+/* 14. Indicador deslizante de pestanias ---------------------------------------------- */
+
+.topbar nav,
+.dev-tabs {
+	position: relative;
+}
+
+.tab-pill {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 0;
+	border-radius: 999px;
+	background: var(--surface-2);
+	pointer-events: none;
+	opacity: 0;
+}
+
+.tab-pill.is-ready {
+	opacity: 1;
+	transition: transform .32s var(--ease-in-out), width .32s var(--ease-in-out), height .32s var(--ease-in-out);
+}
+
+.topbar nav a,
+.dev-tabs a {
+	position: relative;
+	z-index: 1;
+}
+
+.topbar nav:has(.tab-pill.is-ready) a[aria-current="page"],
+.dev-tabs:has(.tab-pill.is-ready) a[aria-current="page"] {
+	background: none;
+}
+
+/* 15. Transicion entre paginas (View Transitions, mejora progresiva) */
+
+@view-transition {
+	navigation: auto;
+}
+
+::view-transition-old(root) {
+	animation: .16s ease-in both vt-out;
+}
+
+::view-transition-new(root) {
+	animation: .3s var(--ease-out) both vt-in;
+}
+
+::view-transition-group(brand-mark) {
+	animation-duration: .5s;
+	animation-timing-function: var(--ease-in-out);
+}
+
+@keyframes vt-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		translate: 0 10px;
+	}
+}
+
+/* 16. Salidas y entradas de avisos, dialogos y banner ---------------------------------- */
+
+#toast.is-leaving {
+	opacity: 0;
+	translate: -50% 8px;
+}
+
+.dialog:not([open]),
+.dev-dialog:not([open]) {
+	opacity: 0;
+	scale: .96;
+}
+
+@starting-style {
+	.banner {
+		opacity: 0;
+		translate: 0 -8px;
+	}
+}
+
+.banner {
+	transition: opacity .24s var(--ease-out), translate .24s var(--ease-out);
+}
+
+/* 17. Responsive de la barra y movimiento reducido ------------------------------ */
+
+@media (max-width: 1100px) {
+	:root {
+		--gutter: 20px;
+	}
+}
+
+/* Barra en dos filas: el menu pasa a una fila propia con scroll horizontal */
+@media (max-width: 960px) {
 	.topbar {
 		height: auto;
 		flex-wrap: wrap;
-		gap: 4px;
-		padding: 8px 12px 0;
+		gap: 6px;
+		padding-top: 10px;
+		padding-bottom: 8px;
 	}
-	.brand b {
-		font-size: 24px;
-	}
-	.brand small {
-		display: none;
-	}
-	nav {
+	.topbar nav {
+		order: 3;
 		width: 100%;
 		overflow-x: auto;
+		padding-bottom: 2px;
 	}
-	nav a {
+	.topbar nav a {
 		min-height: 44px;
-		padding: 0 12px;
+		padding: 0 14px;
 		font-size: 15px;
 		white-space: nowrap;
 	}
 }
 
+@media (max-width: 700px) {
+	:root {
+		--gutter: 16px;
+	}
+	.brand b {
+		font-size: 20px;
+	}
+	.brand small {
+		display: none;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation: none !important;
-		transition: none !important;
+	*,
+	*::before,
+	*::after {
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: .01ms !important;
 	}
 }

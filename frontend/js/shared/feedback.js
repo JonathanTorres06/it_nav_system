@@ -8,20 +8,39 @@
     *
     * Requiere en el HTML: #toast, #banner, #bannerText, #bannerRetry.
 */
+// Guarda el punto de entrada y salida del cursor en cada boton (--px / --py) como origen del barrido de relleno
+function trackPointerOnButton(event) {
+	const button = event.target.closest && event.target.closest(".btn, .dev-btn");
+	if (!button || button.contains(event.relatedTarget)) return;
+	const box = button.getBoundingClientRect();
+	button.style.setProperty("--px", `${((event.clientX - box.left) / box.width * 100).toFixed(1)}%`);
+	button.style.setProperty("--py", `${((event.clientY - box.top) / box.height * 100).toFixed(1)}%`);
+}
+document.addEventListener("pointerover", trackPointerOnButton);
+document.addEventListener("pointerout", trackPointerOnButton);
+
 const Toast = (() => {
 	"use strict";
 
 	const DURATION_MS = 3500;
+	const LEAVE_MS = 220;
 	const node = document.getElementById("toast");
 	let timer = null;
+	let leaveTimer = null;
 
 	/** Muestra un mensaje que desaparece solo */
 	function show(message) {
 		node.textContent = message;
+		node.classList.remove("is-leaving");
 		node.hidden = false;
 		clearTimeout(timer);
+		clearTimeout(leaveTimer);
 		timer = setTimeout(() => {
-			node.hidden = true;
+			// animacion de salida antes de ocultar
+			node.classList.add("is-leaving");
+			leaveTimer = setTimeout(() => {
+				node.hidden = true;
+			}, LEAVE_MS);
 		}, DURATION_MS);
 	}
 

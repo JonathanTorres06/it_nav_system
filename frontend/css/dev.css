@@ -1,42 +1,139 @@
-/* dev.css: Estilos propios del panel de desarrollo (se reusan variables de base.css) */
+/* ============================================================================
+    Inclusive Tech · panel de desarrollo
+    Tarjetas, tablas, pestanias y dialogos. Tokens, dialogos base y toast: base.css.
+    Las clases .dev-* se mantienen porque el JS las asigna a elementos generados.
+============================================================================ */
 
-.dev-link {
-	color: var(--ink);
-	font-weight: 700;
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
 .dev-main {
-	max-width: 860px;
+	max-width: 960px;
 	margin: 0 auto;
-	padding: 24px 16px 64px;
+	padding: 40px var(--gutter) 80px;
 	display: grid;
-	gap: 20px;
+	grid-template-columns: minmax(0, 1fr); /* evita que una tabla ancha ensanche la pagina */
+	gap: 24px;
 }
 
+#workArea,
+#housesView,
+#devicesView {
+	min-width: 0;
+}
+
+/* 1. Tarjetas y avisos ------------------------------------------------------------ */
+
 .dev-card {
-	background: var(--card);
-	border: 2px solid var(--ink);
-	border-radius: 10px;
-	padding: 20px;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: 24px;
+	padding: 28px;
 }
 
 .dev-card h2 {
-	margin: 0 0 12px;
-	font: 700 24px var(--serif);
+	margin: 0 0 14px;
+	font: 700 24px/1.15 var(--display);
+	letter-spacing: -.02em;
 }
 
 .dev-hint {
-	color: var(--ink-soft);
-	margin: 0 0 12px;
+	margin: 0 0 16px;
+	max-width: 68ch;
+	font-size: 16px;
+	color: var(--text-dim);
+}
+
+.dev-hint code {
+	color: var(--lilac);
 }
 
 .dev-warning {
-	background: var(--mustard);
-	border: 2px solid var(--ink);
-	border-radius: 8px;
-	padding: 10px 14px;
-	font-weight: 500;
+	margin: 0;
+	padding: 14px 18px;
+	border: 1px solid rgba(253, 123, 80, .55);
+	border-radius: var(--radius);
+	background: rgba(253, 123, 80, .1);
+	font: 500 16px var(--sans);
 }
+
+/* 2. Tarjeta de clave -------------------------------------------------- */
+
+.dev-key {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+	padding: 32px;
+}
+
+.dev-key-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.dev-key h1 {
+	margin: 0 0 10px;
+	font: 800 clamp(1.8rem, 3vw, 2.4rem)/1.05 var(--display);
+	letter-spacing: -.03em;
+}
+
+/* Sesion abierta: tarjeta compacta */
+.dev-key.is-unlocked {
+	align-items: center;
+	padding: 16px 24px;
+}
+
+.dev-key .lock-tile {
+	width: 72px;
+	height: 72px;
+	border-radius: 22px;
+}
+
+.dev-key .lock-tile .lock {
+	width: 44px;
+	height: 44px;
+}
+
+.dev-key.is-unlocked .lock-tile {
+	width: 56px;
+	height: 56px;
+	border-radius: 18px;
+}
+
+.dev-key.is-unlocked .lock-tile .lock {
+	width: 34px;
+	height: 34px;
+}
+
+.dev-key.is-unlocked h1 {
+	margin: 0;
+	font-size: 22px;
+	letter-spacing: -.02em;
+}
+
+.dev-key.is-unlocked .dev-hint,
+.dev-key.is-unlocked #keyInput,
+.dev-key.is-unlocked #keyForm button[type="submit"] {
+	display: none;
+}
+
+.dev-key.is-unlocked .dev-key-body {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+/* 3. Formularios ----------------------------------------------------------------------- */
 
 .dev-row {
 	display: flex;
@@ -47,134 +144,41 @@
 
 .dev-grid {
 	display: grid;
-	gap: 12px;
+	gap: 16px;
 	grid-template-columns: 1fr 1fr auto;
-	align-items: end;
+	align-items: start; /* alineado al inicio para que el mensaje de error no desplace los demas campos */
 }
 
-.dev-grid label,
-.dev-dialog label {
+.dev-grid > .dev-btn {
+	margin-top: 27px; /* compensa la altura de la etiqueta */
+}
+
+.dev-grid--devices > .dev-btn {
+	margin-top: 0;
+}
+
+.dev-grid label {
 	display: grid;
-	gap: 4px;
-	font-weight: 500;
-}
-
-input {
-	min-height: 44px;
-	padding: 0 12px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: #fff;
-	font: 400 16px var(--sans);
-	color: var(--ink);
+	gap: 6px;
+	font: 600 15px var(--sans);
+	color: var(--text-dim);
 }
 
 #keyInput {
 	flex: 1;
 	min-width: 220px;
+	font-family: var(--mono);
+	font-size: 16px;
 }
 
-.dev-btn {
-	min-height: 44px;
-	padding: 0 18px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: var(--sage);
-	font: 700 16px var(--sans);
-}
-
-.dev-btn--ghost {
-	background: var(--card);
-}
-
-.dev-btn--danger {
-	background: var(--danger);
-	color: #fff;
-}
-
-.dev-btn:disabled {
-	opacity: .45;
-	cursor: not-allowed;
-}
-
-.dev-table {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-.dev-table th,
-.dev-table td {
-	text-align: left;
-	padding: 10px 8px;
-	border-bottom: 1px solid var(--ink-soft);
-}
-
-.dev-badge {
-	margin-left: 8px;
-	padding: 2px 8px;
-	border: 2px solid var(--ink);
-	border-radius: 999px;
-	background: var(--blue);
-	font: 700 13px var(--sans);
-}
-
-.dev-dialog {
-	max-width: 480px;
-	border: 3px solid var(--ink);
-	border-radius: 10px;
-	background: var(--card);
-	color: var(--ink);
-}
-
-.dev-dialog {
-	box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
-}
-
-.dev-dialog::backdrop {
-	background: rgba(27, 42, 65, .5);
-	backdrop-filter: blur(6px);
-	-webkit-backdrop-filter: blur(6px);
-}
-
-.dev-dialog h2 {
-	margin-top: 0;
-	font: 700 24px var(--serif);
-}
-
-.dev-dialog .dev-row {
-	margin-top: 16px;
-	justify-content: flex-end;
-}
-
-#toast {
-	position: fixed;
-	bottom: 24px;
-	left: 50%;
-	transform: translateX(-50%);
-	background: var(--ink);
-	color: var(--card);
-	padding: 12px 20px;
-	border-radius: 8px;
-	z-index: 60;
-}
-
-@media (max-width: 640px) {
-	.dev-grid {
-		grid-template-columns: 1fr;
-	}
-}
-
-/* Pestanias de la pagina de desarrollo y formulario de dispositivos */
-
-.dev-tabs {
-	margin-bottom: 16px;
-	border-bottom: 2px solid var(--ink);
-}
-
-#housesView,
-#devicesView {
-	display: grid;
-	gap: 20px;
+select {
+	min-height: 48px;
+	padding: 0 12px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius-sm);
+	background: var(--ground);
+	color: var(--text);
+	font: 400 17px var(--sans);
 }
 
 .dev-grid--devices {
@@ -186,29 +190,181 @@ input {
 	justify-self: start;
 }
 
-select {
-	min-height: 44px;
-	padding: 0 10px;
-	border: 2px solid var(--ink);
-	border-radius: 6px;
-	background: #fff;
-	font: 400 16px var(--sans);
-	color: var(--ink);
+/* 4. Botones .dev-btn (mismo sistema que .btn de base.css) ------------------------------ */
+
+.dev-btn {
+	min-height: 48px;
+	padding: 0 22px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--coral);
+	border-radius: 999px;
+	background: var(--coral);
+	color: var(--accent-ink);
+	font: 700 16px var(--sans);
+	transition: transform .16s var(--ease-out), background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.dev-btn:active {
+	transform: scale(.97);
+}
+
+.dev-btn--ghost {
+	background: transparent;
+	border-color: var(--line-strong);
+	color: var(--text);
+}
+
+.dev-btn--danger {
+	background: transparent;
+	border-color: var(--danger);
+	color: var(--danger);
+}
+
+.dev-btn--small {
+	min-height: 40px;
+	padding: 0 16px;
+	font-size: 15px;
+}
+
+.dev-btn:disabled {
+	opacity: .4;
+	cursor: not-allowed;
+}
+
+/* El barrido de relleno en hover esta en base.css */
+@media (hover: hover) and (pointer: fine) {
+	.dev-btn--ghost:hover:not(:disabled) {
+		border-color: var(--lilac);
+	}
+	.dev-btn--danger:hover:not(:disabled) {
+		border-color: var(--danger);
+	}
+}
+
+/* 5. Pestanias ---------------------------------------------------------------------------- */
+
+.dev-tabs {
+	display: flex;
+	gap: 6px;
+	margin-bottom: 24px;
+}
+
+.dev-tabs a {
+	min-height: 48px;
+	padding: 0 22px;
+	display: flex;
+	align-items: center;
+	border-radius: 999px;
+	font: 600 16px var(--sans);
+	color: var(--text-dim);
+	text-decoration: none;
+	transition: color .16s ease, background-color .16s ease;
+}
+
+.dev-tabs a[aria-current="page"] {
+	background: var(--surface-2);
+	color: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.dev-tabs a:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+}
+
+#housesView,
+#devicesView {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+}
+
+/* 6. Tablas -------------------------------------------------------------------------------- */
+
+.dev-table-wrap {
+	overflow-x: auto;
+	margin: 0 -8px;
+	padding: 0 8px;
+}
+
+.dev-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.dev-table th {
+	text-align: left;
+	padding: 10px 12px;
+	font: 600 14px var(--sans);
+	color: var(--text-dim);
+	border-bottom: 1px solid var(--line-strong);
+	white-space: nowrap;
+}
+
+.dev-table td {
+	text-align: left;
+	padding: 12px;
+	border-bottom: 1px solid var(--line);
+	font-variant-numeric: tabular-nums;
+}
+
+.dev-table tbody tr:last-child td {
+	border-bottom: 0;
 }
 
 .dev-table code {
-	font: 500 14px ui-monospace, Consolas, monospace;
-	background: var(--paper);
-	padding: 2px 6px;
-	border-radius: 4px;
+	padding: 3px 8px;
+	border-radius: 6px;
+	background: var(--ground);
+	color: var(--lilac);
+	font: 500 14px var(--mono);
 }
 
 .dev-table .dev-row {
 	flex-wrap: nowrap;
 }
 
-.dev-btn--small {
-	min-height: 36px;
-	padding: 0 12px;
-	font-size: 14px;
+.dev-badge {
+	margin-left: 10px;
+	padding: 3px 12px;
+	border-radius: 999px;
+	background: rgba(253, 123, 80, .16);
+	color: var(--coral);
+	font: 700 13px var(--sans);
+	white-space: nowrap;
+}
+
+/* 7. Dialogos (la base esta en base.css) ------------------------------------------------------ */
+
+.dev-dialog p {
+	margin: 0;
+	color: var(--text-dim);
+}
+
+.dev-dialog .dev-warning {
+	margin-top: 14px;
+}
+
+/* 8. Responsive ------------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+	.dev-grid,
+	.dev-grid--devices {
+		grid-template-columns: 1fr;
+	}
+	.dev-card {
+		padding: 22px 18px;
+		border-radius: 20px;
+	}
+	.dev-key {
+		flex-direction: column;
+		gap: 12px;
+		padding: 22px 18px;
+	}
+	.dev-key.is-unlocked {
+		flex-direction: row;
+	}
 }

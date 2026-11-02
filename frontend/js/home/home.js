@@ -28,6 +28,7 @@
 	const NOTE_MS = 7000;
 	const MAX_SUGGESTIONS = 5;
 	const SUGGESTION_BLUR_DELAY_MS = 150;
+	const MIN_ROOM_BELOW_PX = 130;
 	const SMALL_SCREEN_QUERY = "(max-width: 1100px)";
 	const NODE_TYPE_ROOM = "room";
 
@@ -64,7 +65,7 @@
 	// Pequenias utilidades de normalizacion y busqueda
 	// ============================================================================
 
-	/** "Baño " -> "BANO": Eliminar acentos, quitar caracteres no alfanumericos, convertir a mayusculas */
+	/** "Banio " -> "BANO": Eliminar acentos, quitar caracteres no alfanumericos, convertir a mayusculas */
 	function normalizeTechnicalName(value) {
 		return String(value || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
 			.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
@@ -76,7 +77,11 @@
 			.replace(/[“”"']/g, "").trim();
 	}
 
-	const errorText = (error) => (error && error.message) ? error.message : "Error desconocido";
+	// fetch lanza TypeError (mensaje en ingles) cuando no hay conexion
+	const errorText = (error) => {
+		if (error instanceof TypeError) return "Revisa que el backend esté encendido (puerto 8001).";
+		return (error && error.message) ? error.message : "Error desconocido";
+	};
 	const zoneList = () => PlanData.ZONES.map((d) => zones.get(d.id));
 	const isRegistered = (zone) => zone.node !== null;
 	const displayNameOf = (zone) => (zone.node ? zone.node.display_name : zone.definition.defaultName);
@@ -380,6 +385,44 @@
 		const list = $("suggestions");
 		const note = $("searchNote");
 		let noteTimer = null;
+		let hits = []; // sugerencias visibles
+		let active = -1; // indice activo por teclado (-1: ninguno)
+
+		function setActive(index) {
+			active = index;
+			list.querySelectorAll("button").forEach((button, i) => {
+				button.classList.toggle("is-active", i === index);
+				if (i === index) button.scrollIntoView({
+					block: "nearest"
+				});
+			});
+		}
+
+		/**
+		 * Posiciona sugerencias y aviso debajo de la barra.
+		 * Solo se abren hacia arriba si abajo no caben y arriba hay mas espacio.
+		 */
+		function placeBelow(panel) {
+			panel.classList.remove("opens-up");
+			panel.style.maxHeight = "";
+			if (window.matchMedia(SMALL_SCREEN_QUERY).matches) return; // apilado: sin recorte
+			const stageBox = dom.stage.getBoundingClientRect();
+			const formBox = form.getBoundingClientRect();
+			const roomBelow = stageBox.bottom - formBox.bottom - 24;
+			const roomAbove = formBox.top - stageBox.top - 24;
+			if (panel.offsetHeight <= roomBelow) return;
+			// con espacio para ~3 filas se mantiene abajo con scroll interno
+			if (roomBelow >= MIN_ROOM_BELOW_PX) {
+				panel.style.maxHeight = `${roomBelow}px`;
+				return;
+			}
+			if (roomAbove > roomBelow) {
+				panel.classList.add("opens-up");
+				panel.style.maxHeight = `${roomAbove}px`;
+			} else {
+				panel.style.maxHeight = `${Math.max(roomBelow, 96)}px`;
+			}
+		}
 
 		function find(text) {
 			const query = normalizeSearch(text);
@@ -416,6 +459,7 @@
 		function showNote(message) {
 			note.textContent = message;
 			note.hidden = false;
+			placeBelow(note);
 			clearTimeout(noteTimer);
 			noteTimer = setTimeout(() => {
 				note.hidden = true;
@@ -447,7 +491,8 @@
 
 		input.addEventListener("input", () => {
 			note.hidden = true;
-			const hits = find(input.value).slice(0, MAX_SUGGESTIONS);
+			hits = find(input.value).slice(0, MAX_SUGGESTIONS);
+			active = -1;
 			list.innerHTML = "";
 			hits.forEach((hit) => {
 				const li = document.createElement("li");
@@ -465,9 +510,30 @@
 				list.append(li);
 			});
 			list.hidden = hits.length === 0;
+			input.setAttribute("aria-expanded", String(!list.hidden));
+			if (!list.hidden) placeBelow(list);
+		});
+
+		// Teclado: flechas navegan, Intro elige, Esc cierra
+		input.addEventListener("keydown", (e) => {
+			if (list.hidden || !hits.length) return;
+			if (e.key === "ArrowDown") {
+				e.preventDefault();
+				setActive((active + 1) % hits.length);
+			} else if (e.key === "ArrowUp") {
+				e.preventDefault();
+				setActive((active - 1 + hits.length) % hits.length);
+			} else if (e.key === "Escape") {
+				e.stopPropagation();
+				list.hidden = true;
+			} else if (e.key === "Enter" && active >= 0) {
+				e.preventDefault();
+				list.querySelectorAll("button")[active].click();
+			}
 		});
 		input.addEventListener("blur", () => setTimeout(() => {
 			list.hidden = true;
+			input.setAttribute("aria-expanded", "false");
 		}, SUGGESTION_BLUR_DELAY_MS));
 	})();
 

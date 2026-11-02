@@ -22,10 +22,12 @@ const PlanRenderer = (() => {
 	const INK_STAGGER_SECONDS = 0.05;
 	const PING_DURATION_MS = 2600;
 	const DOOR_BADGE_DEFAULT_WIDTH = 144;
-	const PAPER_COLOR = "#f3ead8";
-	const INK_COLOR = "#1b2a41";
+	const GROUND_COLOR = "#090819"; // debe coincidir con el fondo del escenario (--ground)
+	const ICON_COLOR = "#f5f3f8";
+	const LINE_COLOR = "#cdc4e7";
+	const BADGE_FILL = "#31295e";
 
-	const DOOR_GLYPH = '<rect x="-10" y="-16" width="20" height="32" rx="3"/><circle cx="4" cy="1" r="2" fill="#f3ead8"/>';
+	const DOOR_GLYPH = '<rect x="-10" y="-16" width="20" height="32" rx="3"/><circle cx="4" cy="1" r="2" fill="#f5f3f8"/>';
 	const WINDOW_GLYPH = '<rect x="-13" y="-13" width="26" height="26" rx="2"/><path d="M0-13V13M-13 0H13"/>';
 
 	let svg = null;
@@ -90,7 +92,7 @@ const PlanRenderer = (() => {
 		[...PlanData.DOORS, ...PlanData.WINDOWS].forEach(([gap]) => {
 			el("path", {
 				d: gap,
-				stroke: PAPER_COLOR,
+				stroke: GROUND_COLOR,
 				"stroke-width": PlanData.OPENING_MASK_WIDTH,
 				"stroke-linecap": "butt",
 			}, layers.walls);
@@ -128,14 +130,14 @@ const PlanRenderer = (() => {
 					width: w,
 					height: 46,
 					rx: 23,
-					fill: INK_COLOR,
-					stroke: PAPER_COLOR,
+					fill: BADGE_FILL,
+					stroke: GROUND_COLOR,
 					"stroke-width": 3
 				}, g);
 				const icon = el("g", {
 					transform: `translate(${24 - w / 2} 0) scale(.8)`,
 					fill: "none",
-					stroke: PAPER_COLOR,
+					stroke: ICON_COLOR,
 					"stroke-width": 3
 				}, g);
 				icon.innerHTML = DOOR_GLYPH; // codigo fijo, sin datos de usuario
@@ -147,13 +149,13 @@ const PlanRenderer = (() => {
 			} else {
 				el("circle", {
 					r: 27,
-					fill: INK_COLOR,
-					stroke: PAPER_COLOR,
+					fill: BADGE_FILL,
+					stroke: GROUND_COLOR,
 					"stroke-width": 3
 				}, g);
 				const icon = el("g", {
 					fill: "none",
-					stroke: PAPER_COLOR,
+					stroke: ICON_COLOR,
 					"stroke-width": 2.6
 				}, g);
 				icon.innerHTML = DOOR_GLYPH;
@@ -169,14 +171,14 @@ const PlanRenderer = (() => {
 				width: 48,
 				height: 48,
 				rx: 11,
-				fill: INK_COLOR,
-				stroke: PAPER_COLOR,
+				fill: BADGE_FILL,
+				stroke: GROUND_COLOR,
 				"stroke-width": 3
 			}, g);
 			const icon = el("g", {
 				transform: "scale(.82)",
 				fill: "none",
-				stroke: PAPER_COLOR,
+				stroke: ICON_COLOR,
 				"stroke-width": 2.8
 			}, g);
 			icon.innerHTML = WINDOW_GLYPH;
@@ -199,7 +201,7 @@ const PlanRenderer = (() => {
 			d: zone.outline,
 			transform: OUTLINE_OFFSET,
 			fill: "none",
-			stroke: "rgba(27,42,65,.4)",
+			stroke: "rgba(205,196,231,.35)",
 			"stroke-width": 2.6,
 		}, layers.fill);
 		el("path", {...attrs,
@@ -213,7 +215,7 @@ const PlanRenderer = (() => {
 			...attrs,
 			class: "zone-furniture",
 			fill: "none",
-			stroke: INK_COLOR,
+			stroke: LINE_COLOR,
 			transform: `translate(${zone.iconAt.x} ${zone.iconAt.y}) scale(${icon.scale})`,
 			"stroke-width": 3 / icon.scale,
 			"stroke-linecap": "round",
@@ -235,7 +237,11 @@ const PlanRenderer = (() => {
 			tabindex: 0,
 			role: "button",
 		}, layers.hit);
-		const hover = (on) => byZone("zone-select", zone.id).classList.toggle("is-hover", on);
+		// hover: resalta relleno, etiqueta y contorno de la zona
+		const hover = (on) => ["zone-select", "zone-fill", "zone-label"].forEach((cls) => {
+			const node = byZone(cls, zone.id);
+			if (node) node.classList.toggle("is-hover", on);
+		});
 		hit.addEventListener("click", () => onSelect(zone.id));
 		hit.addEventListener("mouseenter", () => hover(true));
 		hit.addEventListener("mouseleave", () => hover(false));

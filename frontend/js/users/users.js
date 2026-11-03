@@ -110,7 +110,7 @@
 		event.preventDefault();
 		const value = dom.keyInput.value.trim();
 		if (!value) {
-			showKeyForm("Pega la clave que aparece en admin_api_key.txt.");
+			showKeyForm("Pega la clave de acceso que copiaste en la casa 3D.");
 			return;
 		}
 		UsersApiKeyStore.set(value);

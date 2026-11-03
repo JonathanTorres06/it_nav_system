@@ -1,24 +1,24 @@
 /**
- * users-api.js
- * -----------------------------------------------------------------------------
- * Capa de datos de la pestana Usuarios: habla con el servicio de
- * reconocimiento facial (servidor HTTP embebido en la app Unity, puerto 8002).
- *
- * Capa: Presentacion -> acceso a datos (igual que nav-api.js).
- * Patrones:
- *   - Facade: 4 funciones simples ocultan fetch, cabeceras y manejo de errores.
- *   - Adapter: traduce el JSON del servicio (nombre, es_administrador,
- *     fecha_registro) al objeto interno en ingles { id, name, isAdmin,
- *     registeredAt }. Si el servicio cambia sus campos, solo se toca aqui.
- * Analogia: el traductor de la embajada; el resto del panel nunca habla el
- * idioma del otro servicio.
- *
- * Seguridad: la clave X-Api-Key NO va escrita en el codigo. La persona la
- * pega una vez en el panel (esta en admin_api_key.txt, junto a la app Unity)
- * y se guarda solo en el navegador de esa maquina.
- *
- * Nota: la creacion de usuarios (POST /users) NO existe y no se implementa.
- */
+	* users-api.js
+	* -----------------------------------------------------------------------------
+	* Capa de datos de la pestana Usuarios: habla con el servicio de
+	* reconocimiento facial (servidor HTTP embebido en la app Unity, puerto 8002).
+	*
+	* Capa: Presentacion -> acceso a datos (igual que nav-api.js).
+	* Patrones:
+	*   - Facade: 4 funciones simples ocultan fetch, cabeceras y manejo de errores.
+	*   - Adapter: traduce el JSON del servicio (nombre, es_administrador,
+	*     fecha_registro) al objeto interno en ingles { id, name, isAdmin,
+	*     registeredAt }. Si el servicio cambia sus campos, solo se toca aqui.
+	* Analogia: el traductor de la embajada; el resto del panel nunca habla el
+	* idioma del otro servicio.
+	*
+	* Seguridad: la clave X-Api-Key NO va escrita en el codigo. La persona la
+	* pega una vez en el panel (esta en admin_api_key.txt, junto a la app Unity)
+	* y se guarda solo en el navegador de esa maquina.
+	*
+	* Nota: la creacion de usuarios (POST /users) NO existe y no se implementa.
+*/
 
 const USERS_API_BASE_URL = "http://localhost:8002";
 
@@ -96,7 +96,7 @@ consumeKeyFromUrl();
 
 // --- Mensajes para la persona usuaria ------------------------------------------
 const USERS_API_MESSAGES = Object.freeze({
-	missingKey: "Falta la clave de acceso del sistema de reconocimiento facial.",
+	missingKey: "Falta la clave de acceso. Un administrador puede copiarla en la casa 3D, con el botón «Clave de acceso».",
 	connection: "No se pudo conectar al sistema de reconocimiento facial. Verifica que la app de Unity esté abierta.",
 	unauthorized: "La clave de acceso no es correcta.",
 	forbidden: "El sistema de reconocimiento rechazó el origen del panel. Abre el panel desde http://localhost (por ejemplo con: python -m http.server 5500 dentro de la carpeta frontend) y no desde un archivo.",

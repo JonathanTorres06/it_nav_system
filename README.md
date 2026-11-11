@@ -49,9 +49,9 @@ flowchart LR
     panel["Panel web"] --> api
     unity["Unity<br/>nav 3D + registro"] --> api
     mia["Asistente Mía<br/>it_ai_assistant"] --> api
-    api["⚙️ it_nav_system<br/>FastAPI :8001"] --> db[("🗄️ SQLite")]
-    api -->|MQTT| broker["📡 Broker MQTT"]
-    broker --> esp["🔌 ESP32 / Simulador<br/>luces y puertas"]
+    api["⚙️ it_nav_system<br/>FastAPI :8001"] --> db[("SQLite")]
+    api -->|MQTT| broker["Broker MQTT"]
+    broker --> esp["ESP32 / Simulador<br/>luces y puertas"]
 
     classDef core fill:#1f6feb,stroke:#0b3a8c,color:#fff;
     classDef cli fill:#238636,stroke:#116329,color:#fff;

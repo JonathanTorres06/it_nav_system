@@ -193,8 +193,8 @@ El panel web **lo sirve el propio backend** (archivos de `frontend/` montados en
 Páginas:
 
 - **`/` (index):** pantalla central. Enlaza al panel del hogar y al panel de desarrollo. Si Unity abre la raíz con `#key=...`, redirige automáticamente al panel del hogar conservando la clave.
-- **`panel.html` — Panel del hogar:** pestañas **Hogar** (nodos, renombrar, alias de voz) y **Usuarios**.
-- **`dev.html` — Panel de desarrollo:** gestión de casas y dispositivos. Requiere la clave de desarrollador, que `index.html` valida y guarda antes de redirigir.
+- **`panel.html`, Panel del hogar:** pestañas **Hogar** (nodos, renombrar, alias de voz) y **Usuarios**.
+- **`dev.html`, Panel de desarrollo:** gestión de casas y dispositivos. Requiere la clave de desarrollador, que `index.html` valida y guarda antes de redirigir.
 
 Desde el panel del hogar el usuario puede ver los nodos, renombrar una habitación (`display_name`) y agregar o eliminar alias de voz (hasta 5 por nodo). Esos cambios se reflejan en Unity sin reiniciar la escena, gracias al *polling* de `RoomNameBootstrap`.
 
@@ -242,7 +242,7 @@ Documentación completa e interactiva en `/docs` con el servidor corriendo. Los 
 |---|---|---|
 | `GET` | `/health` | Verifica que la API está activa. |
 
-### Desarrollador — `/dev` (requiere `X-Dev-Key`)
+### Desarrollador: `/dev` (requiere `X-Dev-Key`)
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -261,7 +261,7 @@ Documentación completa e interactiva en `/docs` con el servidor corriendo. Los 
 | `PATCH` | `/dev/devices/{device_id}/display-name` | Renombra un dispositivo. |
 | `DELETE` | `/dev/devices/{device_id}` | Elimina un dispositivo. |
 
-### Panel de usuario — `/user`
+### Panel de usuario: `/user`
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -271,7 +271,7 @@ Documentación completa e interactiva en `/docs` con el servidor corriendo. Los 
 | `POST` | `/user/nodes/{node_id}/aliases` | Agrega un alias de voz. |
 | `DELETE` | `/user/nodes/{node_id}/aliases/{alias_id}` | Elimina un alias. |
 
-### Dispositivos de usuario — `/user/devices`
+### Dispositivos de usuario: `/user/devices`
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -280,7 +280,7 @@ Documentación completa e interactiva en `/docs` con el servidor corriendo. Los 
 | `POST` | `/user/devices/doors/{device_key}` | Abre/cierra una puerta. |
 | `GET` | `/user/devices/orders/problems` | Órdenes que no se confirmaron a tiempo. |
 
-### Pasarela MQTT (desarrollador) — `/dev/gateway`
+### Pasarela MQTT (desarrollador): `/dev/gateway`
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -355,5 +355,5 @@ it_nav_system/
 
 ## Contexto académico
 
-Proyecto de grado **Panitas: Inclusive Tech** — Fundación Universitaria Konrad Lorenz.
+Proyecto de grado **Panitas: Inclusive Tech** - Fundación Universitaria Konrad Lorenz.
 Sistema domótico accesible compuesto por el sistema de navegación (`it_nav_system`), el asistente de voz (`it_ai_assistant`), la palabra de activación (`it_wake_word`) y el reconocimiento facial, integrados en la aplicación de Unity `InclusiveTech_SmartHome`. Este módulo es la fuente de verdad del grafo de la casa y el puente hacia los dispositivos físicos.

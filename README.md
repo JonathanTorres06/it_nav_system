@@ -1,4 +1,4 @@
-# it_nav_system — sistema de navegación y domótica
+# it_nav_system: sistema de navegación y domótica
 
 Microservicio de **navegación domótica** del proyecto **Inclusive Tech**, un sistema domótico accesible desarrollado como proyecto de grado en la Fundación Universitaria Konrad Lorenz. Trabaja junto al asistente de voz **Mía**.
 

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+    Inclusive Tech · Lanzador de servicios
+    Pagina del lanzador (proceso aparte, puerta 8010). Enciende y apaga
+    it_nav_system (y Mia) y muestra el estado del broker.
+    Autocontenida a proposito: se sirve sin el resto del frontend.
+-->
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inclusive Tech · Lanzador</title>
+    <style>
+        :root {
+            --ground: #090819;
+            --surface: #120e29;
+            --surface-2: #1b1438;
+            --line: rgba(205, 196, 231, .16);
+            --line-strong: rgba(205, 196, 231, .34);
+            --text: #f5f3f8;
+            --text-dim: #b6add1;
+            --text-faint: #8a7fb0;
+            --coral: #fd7b50;
+            --accent-ink: #1a0a14;
+            --ok: #8be0b0;
+            --danger: #ff7d8e;
+            --amber: #f2c14e;
+            color-scheme: dark;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--ground);
+            color: var(--text);
+            padding: 28px 16px 48px;
+        }
+
+        main { max-width: 680px; margin: 0 auto; }
+
+        h1 { margin: 0 0 4px; font-size: 1.7rem; }
+
+        .lede { margin: 0 0 18px; color: var(--text-dim); }
+
+        .hint {
+            margin: 0 0 18px; padding: 10px 14px;
+            border: 1px dashed var(--line-strong); border-radius: 10px;
+            color: var(--text-dim); font-size: .95rem;
+        }
+
+        .card {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px 16px;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+        }
+
+        .card-info { min-width: 0; }
+        .card-name { font-weight: 650; font-size: 1.05rem; }
+        .card-note { margin-top: 2px; color: var(--text-faint); font-size: .85rem; }
+
+        .state { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; font-weight: 600; font-size: .92rem; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--text-faint); }
+        .state[data-kind="ok"] .dot { background: var(--ok); }
+        .state[data-kind="bad"] .dot { background: var(--danger); }
+        .state[data-kind="busy"] .dot { background: var(--amber); animation: pulse 1.1s ease infinite; }
+        @keyframes pulse { 50% { opacity: .35; } }
+
+        .actions { display: flex; gap: 8px; }
+
+        button {
+            min-height: 44px; padding: 0 16px;
+            border: 1px solid var(--line-strong); border-radius: 999px;
+            background: transparent; color: var(--text);
+            font: 600 15px inherit; cursor: pointer;
+            transition: background-color .15s ease, border-color .15s ease, transform .1s ease;
+        }
+        button:active { transform: scale(.97); }
+        button:disabled { opacity: .4; cursor: not-allowed; }
+        button.primary { background: var(--coral); border-color: var(--coral); color: var(--accent-ink); }
+        button.primary:hover:not(:disabled) { filter: brightness(1.05); }
+
+        .open-row { margin-top: 20px; display: flex; justify-content: center; }
+        a.open-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            min-height: 48px; padding: 0 22px;
+            border-radius: 999px; background: var(--surface-2);
+            border: 1px solid var(--line-strong); color: var(--text);
+            text-decoration: none; font-weight: 650;
+        }
+        a.open-link[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+
+        #error { margin-top: 10px; min-height: 1.2em; color: var(--danger); font-size: .9rem; text-align: center; }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Lanzador de servicios</h1>
+        <p class="lede">Enciende o apaga los servicios del modo sistema desde aquí.</p>
+        <p class="hint">El <b>broker MQTT (Mosquitto)</b> se arranca aparte; aquí solo se muestra si está vivo.</p>
+
+        <div id="cards"></div>
+
+        <div class="open-row">
+            <a id="openSistema" class="open-link" href="#" aria-disabled="true" target="_blank" rel="noopener">
+                Abrir modo sistema
+            </a>
+        </div>
+        <p id="error"></p>
+    </main>
+
+    <script>
+        "use strict";
+
+        const POLL_MS = 2000;
+        const cardsBox = document.getElementById("cards");
+        const openLink = document.getElementById("openSistema");
+        const errorBox = document.getElementById("error");
+        let sistemaUrl = "#";
+        let busy = false;
+
+        const STATE_TEXT = {
+            stopped: "Detenido",
+            starting: "Arrancando…",
+            running: "En línea (lo arrancó el lanzador)",
+            external: "En línea (ya estaba corriendo)",
+            error: "Error",
+            online: "En línea",
+            offline: "Apagado",
+        };
+
+        // ok = verde, bad = rojo, busy = ambar, neutro = gris
+        const STATE_KIND = {
+            stopped: "neutral",
+            starting: "busy",
+            running: "ok",
+            external: "ok",
+            error: "bad",
+            online: "ok",
+            offline: "bad",
+        };
+
+        function buildCard(service) {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const info = document.createElement("div");
+            info.className = "card-info";
+
+            const name = document.createElement("div");
+            name.className = "card-name";
+            name.textContent = service.label;
+
+            const state = document.createElement("div");
+            state.className = "state";
+            state.dataset.kind = STATE_KIND[service.state] || "neutral";
+            const dot = document.createElement("span");
+            dot.className = "dot";
+            const stateText = document.createElement("span");
+            stateText.textContent = STATE_TEXT[service.state] || service.state;
+            state.append(dot, stateText);
+
+            info.append(name, state);
+            if (service.error) {
+                const err = document.createElement("div");
+                err.className = "card-note";
+                err.style.color = "var(--danger)";
+                err.textContent = service.error;
+                info.append(err);
+            } else if (service.note) {
+                const note = document.createElement("div");
+                note.className = "card-note";
+                note.textContent = service.note;
+                info.append(note);
+            }
+
+            const actions = document.createElement("div");
+            actions.className = "actions";
+
+            if (service.managed) {
+                const startBtn = document.createElement("button");
+                startBtn.className = "primary";
+                startBtn.textContent = "Arrancar";
+                startBtn.disabled = busy || service.state === "starting"
+                    || service.state === "running" || service.state === "external";
+                startBtn.addEventListener("click", () => sendAction(service.name, "start"));
+
+                const stopBtn = document.createElement("button");
+                stopBtn.textContent = "Apagar";
+                stopBtn.disabled = busy || service.state !== "running";
+                stopBtn.addEventListener("click", () => sendAction(service.name, "stop"));
+
+                actions.append(startBtn, stopBtn);
+            }
+
+            card.append(info, actions);
+            return card;
+        }
+
+        function render(data) {
+            sistemaUrl = data.sistema_url || "#";
+            cardsBox.innerHTML = "";
+            let navReady = false;
+
+            for (const service of data.services) {
+                cardsBox.append(buildCard(service));
+                if (service.name === "nav" && (service.state === "running" || service.state === "external")) {
+                    navReady = true;
+                }
+            }
+
+            openLink.href = navReady ? sistemaUrl : "#";
+            openLink.setAttribute("aria-disabled", String(!navReady));
+        }
+
+        async function refresh() {
+            try {
+                const response = await fetch("/status", { cache: "no-store" });
+                const data = await response.json();
+                render(data);
+                errorBox.textContent = "";
+            } catch {
+                errorBox.textContent = "No se pudo hablar con el lanzador.";
+            }
+        }
+
+        async function sendAction(name, action) {
+            busy = true;
+            errorBox.textContent = action === "start" ? "Arrancando, espera…" : "Apagando…";
+            try {
+                await fetch(`/services/${name}/${action}`, { method: "POST" });
+            } catch {
+                errorBox.textContent = "No se pudo enviar la orden al lanzador.";
+            } finally {
+                busy = false;
+                refresh();
+            }
+        }
+
+        refresh();
+        setInterval(refresh, POLL_MS);
+    </script>
+</body>
+
+</html>

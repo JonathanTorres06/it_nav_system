@@ -16,6 +16,10 @@
 		element: document.getElementById("devicesView"),
 		onShow: DevicesTab.onShow
 	});
+	Tabs.register("sistema", {
+		element: document.getElementById("sistemaView"),
+		onShow: SystemTab.onShow
+	});
 	Tabs.init();
 	Tabs.show("houses");
 })();

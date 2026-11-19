@@ -20,7 +20,12 @@
 	* Nota: la creacion de usuarios (POST /users) NO existe y no se implementa.
 */
 
-const USERS_API_BASE_URL = "http://localhost:8002";
+// El servicio de rostros vive en la app de Unity, en el mismo PC, puerto 8002.
+// Armamos la direccion con el host de la propia pagina para que tambien se
+// pueda abrir desde el celular (http://IP-del-PC:8002). Aviso: ese servicio
+// puede exigir que el panel venga de un origen permitido; si responde 403,
+// hay que ajustar su lista de origenes del lado de Unity.
+const USERS_API_BASE_URL = `http://${location.hostname || "localhost"}:8002`;
 
 /** Tipos de error para que la interfaz decida que mostrar. */
 const UsersApiErrorKind = Object.freeze({

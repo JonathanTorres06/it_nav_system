@@ -18,6 +18,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/dev.css">
+    <link rel="stylesheet" href="css/sistema.css">
 </head>
 
 <body>
@@ -93,6 +94,7 @@
             <nav class="dev-tabs" aria-label="Secciones">
                 <a href="#" data-tab="houses" aria-current="page">Casas</a>
                 <a href="#" data-tab="devices">Dispositivos</a>
+                <a href="#" data-tab="sistema">Modo sistema</a>
             </nav>
 
             <div id="housesView">
@@ -172,6 +174,103 @@
                     </div>
                 </section>
             </div>
+
+            <div id="sistemaView" class="sys-tab" hidden>
+                <p class="note">Prueba la casa con la voz de Mía o con los botones, a través del servicio, sin
+                    abrir Unity. Las puertas se controlan con los botones, no tienen comando de voz.</p>
+
+                <section class="sys-mode" aria-label="Selector de modo">
+                    <div class="mode-switch" role="radiogroup" aria-label="Modo de control">
+                        <button id="modeSistema" class="mode-btn is-on" type="button" role="radio" aria-checked="true">
+                            <span class="mode-name">Modo sistema</span>
+                            <span class="mode-desc">Voz y servicio desde esta página</span>
+                        </button>
+                        <button id="modeDirecto" class="mode-btn" type="button" role="radio" aria-checked="false">
+                            <span class="mode-name">Modo directo</span>
+                            <span class="mode-desc">Usa la página de la placa (PRUEBA-ESP32)</span>
+                        </button>
+                    </div>
+                    <p id="modeNote" class="note"></p>
+                </section>
+
+                <section class="sys-status" aria-label="Estado de los servicios">
+                    <span class="sec-title">Estado</span>
+                    <div class="status-grid">
+                        <div class="status-card" id="serviceCard" data-state="checking">
+                            <i class="status-dot" aria-hidden="true"></i>
+                            <div>
+                                <span class="status-name">Servicio</span>
+                                <span class="status-value" id="serviceText">Comprobando…</span>
+                            </div>
+                        </div>
+                        <div class="status-card" id="brokerCard" data-state="checking">
+                            <i class="status-dot" aria-hidden="true"></i>
+                            <div>
+                                <span class="status-name">Broker MQTT</span>
+                                <span class="status-value" id="brokerText">Comprobando…</span>
+                            </div>
+                        </div>
+                        <div class="status-card" id="assistantCard" data-state="checking">
+                            <i class="status-dot" aria-hidden="true"></i>
+                            <div>
+                                <span class="status-name">Mía</span>
+                                <span class="status-value" id="assistantText">Comprobando…</span>
+                            </div>
+                        </div>
+                        <div class="status-card" id="boardCard" data-state="checking">
+                            <i class="status-dot" aria-hidden="true"></i>
+                            <div>
+                                <span class="status-name">Placa</span>
+                                <span class="status-value" id="boardText">Comprobando…</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="systemControls">
+                    <section class="sys-voice" aria-label="Comando por voz o texto">
+                        <span class="sec-title">Comando a Mía</span>
+                        <div class="voice-row">
+                            <button id="talkButton" class="talk" type="button" aria-pressed="false">
+                                <span class="talk-icon" aria-hidden="true"></span>
+                                <span class="talk-label">Mantén para hablar</span>
+                            </button>
+                            <form id="textForm" class="text-row" autocomplete="off">
+                                <input id="textInput" type="text" inputmode="text"
+                                    placeholder="Escribe: enciende la luz de la sala"
+                                    aria-label="Comando de texto para Mía">
+                                <button id="sendTextButton" class="btn btn-primary" type="submit">Enviar</button>
+                            </form>
+                        </div>
+
+                        <div class="result" aria-live="polite">
+                            <div class="result-row"><span class="result-label">Mía entendió</span><span id="heardText"
+                                    class="result-value">·</span></div>
+                            <div class="result-row"><span class="result-label">Acción</span><span id="actionText"
+                                    class="result-value">·</span></div>
+                            <div class="result-row"><span class="result-label">Resultado</span><span id="resultText"
+                                    class="result-value">·</span></div>
+                        </div>
+                        <audio id="miaAudio" hidden></audio>
+                    </section>
+
+                    <section class="sys-manual" aria-label="Controles manuales">
+                        <span class="sec-title">Luces</span>
+                        <div id="lightsList" class="device-list">
+                            <p class="note" id="lightsEmpty">Cargando luces…</p>
+                        </div>
+                        <div class="all-lights">
+                            <button id="allOnButton" class="btn btn-small" type="button">Encender todas</button>
+                            <button id="allOffButton" class="btn btn-small" type="button">Apagar todas</button>
+                        </div>
+
+                        <span class="sec-title sec-title--spaced">Puertas</span>
+                        <div id="doorsList" class="device-list">
+                            <p class="note" id="doorsEmpty">Cargando puertas…</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -225,6 +324,10 @@
     <script src="js/dev/dev-api.js"></script>
     <script src="js/dev/dev.js"></script>
     <script src="js/dev/devices.js"></script>
+    <script src="js/sistema/system-api.js"></script>
+    <script src="js/sistema/room-resolver.js"></script>
+    <script src="js/sistema/voice-recorder.js"></script>
+    <script src="js/sistema/system.js"></script>
     <script src="js/dev/dev-main.js"></script>
 </body>
 

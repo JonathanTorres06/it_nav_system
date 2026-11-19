@@ -10,9 +10,11 @@
 */
 
 // --- Configuracion base ----------------------------------------------
-// Si el backend corre en otra IP/puerto (ej, una Raspberry Pi en
-// red local), este es unico valor que hay que cambiar.
-const API_BASE_URL = "http://127.0.0.1:8001";
+// El panel lo sirve el propio backend, asi que hablamos con su mismo origen.
+// Esto hace que el panel funcione igual abierto en el PC (127.0.0.1) que
+// desde otro equipo de la red, como un celular, entrando por la IP del PC.
+// El fallback solo aplica si se abre el archivo sin servidor (file://).
+const API_BASE_URL = location.protocol.startsWith("http") ? location.origin : "http://127.0.0.1:8001";
 
 
 /**

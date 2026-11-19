@@ -1,0 +1,356 @@
+/* ============================================================================
+    Inclusive Tech · Modo sistema (pruebas)
+    Estilos propios de sistema.html. Reutiliza los tokens y componentes de
+    base.css (paleta Panitas, botones, avisos).
+============================================================================ */
+
+.sys-body {
+	min-height: 100vh;
+}
+
+.sys {
+	max-width: 880px;
+	margin: 0 auto;
+	padding: 28px var(--gutter) 64px;
+	display: grid;
+	gap: 22px;
+}
+
+/* Contenedor del modo sistema cuando vive como pestania del panel de dev.
+   Reparte las secciones con un ritmo parejo para que ningun titulo quede
+   apretado contra lo de arriba o lo de abajo. */
+.sys-tab {
+	display: grid;
+	gap: 28px;
+}
+
+#systemControls {
+	display: grid;
+	gap: 28px;
+}
+
+/* Aire debajo de cada titulo de seccion; el aire de arriba lo da el gap */
+.sys-tab .sec-title {
+	margin-bottom: 14px;
+}
+
+/* Un segundo titulo dentro de la misma seccion, como Puertas debajo de Luces */
+.sec-title--spaced {
+	margin-top: 26px;
+}
+
+.sys-intro h1 {
+	margin: 0 0 8px;
+	font: 800 clamp(28px, 5vw, 40px)/1.05 var(--display);
+	letter-spacing: -.02em;
+}
+
+.sys-intro .lede {
+	margin: 0;
+	max-width: 62ch;
+	font: 400 18px/1.55 var(--sans);
+	color: var(--text-dim);
+}
+
+/* --- Selector de modo --------------------------------------------------- */
+
+.mode-switch {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.mode-btn {
+	display: grid;
+	gap: 3px;
+	padding: 14px 16px;
+	text-align: left;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius);
+	background: var(--surface);
+	color: var(--text);
+	transition: border-color .16s ease, background-color .16s ease, transform .16s var(--ease-out);
+}
+
+.mode-btn:active {
+	transform: scale(.99);
+}
+
+.mode-btn.is-on {
+	border-color: var(--coral);
+	background: rgba(253, 123, 80, .12);
+}
+
+.mode-name {
+	font: 700 17px var(--display);
+}
+
+.mode-desc {
+	font: 400 14px var(--sans);
+	color: var(--text-dim);
+}
+
+/* --- Panel de estado ---------------------------------------------------- */
+
+.status-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
+}
+
+.status-card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+}
+
+.status-card>div {
+	display: grid;
+	gap: 1px;
+	min-width: 0;
+}
+
+.status-name {
+	font: 600 13px var(--sans);
+	color: var(--text-dim);
+}
+
+.status-value {
+	font: 600 15px var(--sans);
+	color: var(--text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.status-dot {
+	flex: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--text-faint);
+	box-shadow: 0 0 0 4px rgba(138, 127, 176, .18);
+}
+
+[data-state="ok"] .status-dot {
+	background: var(--ok);
+	box-shadow: 0 0 0 4px rgba(139, 224, 176, .18);
+}
+
+[data-state="down"] .status-dot,
+[data-state="error"] .status-dot {
+	background: var(--danger);
+	box-shadow: 0 0 0 4px rgba(255, 125, 142, .18);
+}
+
+[data-state="checking"] .status-dot {
+	animation: dot-pulse 1.1s var(--ease-out) infinite;
+}
+
+@keyframes dot-pulse {
+	50% {
+		opacity: .35;
+	}
+}
+
+/* --- Voz y texto -------------------------------------------------------- */
+
+.voice-row {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 12px;
+	align-items: stretch;
+}
+
+.talk {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 56px;
+	padding: 0 22px;
+	border: 1px solid var(--line-strong);
+	border-radius: 999px;
+	background: var(--surface-2);
+	color: var(--text);
+	font: 650 16px var(--sans);
+	transition: background-color .16s ease, border-color .16s ease, transform .12s var(--ease-out);
+}
+
+.talk:active {
+	transform: scale(.98);
+}
+
+.talk[aria-pressed="true"] {
+	background: var(--rose);
+	border-color: var(--rose);
+	color: #fff;
+}
+
+.talk-icon {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.talk[aria-pressed="true"] .talk-icon {
+	animation: rec-pulse .9s var(--ease-out) infinite;
+}
+
+@keyframes rec-pulse {
+	50% {
+		opacity: .4;
+	}
+}
+
+.text-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 10px;
+}
+
+.text-row input {
+	min-width: 0;
+}
+
+.result {
+	margin-top: 14px;
+	display: grid;
+	gap: 8px;
+	padding: 14px 16px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+}
+
+.result-row {
+	display: grid;
+	grid-template-columns: 120px 1fr;
+	gap: 12px;
+	align-items: baseline;
+}
+
+.result-label {
+	font: 600 13px var(--sans);
+	color: var(--text-dim);
+}
+
+.result-value {
+	font: 500 16px var(--sans);
+	color: var(--text);
+	word-break: break-word;
+}
+
+.result-value[data-outcome="confirmed"] {
+	color: var(--ok);
+}
+
+.result-value[data-outcome="no_response"],
+.result-value[data-outcome="mismatch"],
+.result-value[data-outcome="error"] {
+	color: var(--danger);
+}
+
+/* --- Controles manuales ------------------------------------------------- */
+
+.device-list {
+	display: grid;
+	gap: 8px;
+}
+
+.device-row {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	gap: 10px;
+	align-items: center;
+	padding: 10px 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+}
+
+.device-name {
+	font: 600 16px var(--sans);
+}
+
+.device-key {
+	font: 500 13px var(--mono);
+	color: var(--text-faint);
+}
+
+.device-state {
+	justify-self: end;
+	font: 600 14px var(--sans);
+	color: var(--text-dim);
+}
+
+.device-state[data-on="true"] {
+	color: var(--ok);
+}
+
+.all-lights {
+	margin-top: 10px;
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+/* Un punto del color del resultado delante del texto, en vez de un glifo */
+.result-value[data-outcome] {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.result-value[data-outcome]::before {
+	content: "";
+	flex: none;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+/* Bloqueo visual cuando esta en modo directo */
+#systemControls.is-locked {
+	opacity: .5;
+	pointer-events: none;
+	filter: grayscale(.3);
+}
+
+/* Realce al pasar el cursor (solo donde hay cursor de verdad) */
+@media (hover: hover) and (pointer: fine) {
+	.mode-btn:hover:not(.is-on) {
+		border-color: var(--line-strong);
+		background: var(--surface-2);
+	}
+
+	.device-row:hover {
+		border-color: var(--line-strong);
+	}
+}
+
+/* --- Responsive --------------------------------------------------------- */
+
+@media (max-width: 720px) {
+	.status-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.voice-row {
+		grid-template-columns: 1fr;
+	}
+
+	.mode-switch {
+		grid-template-columns: 1fr;
+	}
+
+	.result-row {
+		grid-template-columns: 1fr;
+		gap: 2px;
+	}
+}

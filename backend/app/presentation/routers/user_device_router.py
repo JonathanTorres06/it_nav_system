@@ -24,8 +24,10 @@ from app.domain.exceptions import DeviceNotFoundError, GatewayUnavailableError
 from app.presentation.gateway_schemas import (
     AllLightsCommandRequest,
     AllLightsCommandResponse,
+    DeviceLiveStatusResponse,
     DoorCommandRequest,
     DoorCommandResponse,
+    GatewayStatusResponse,
     LightCommandRequest,
     LightCommandResponse,
     OrderReportResponse,
@@ -147,3 +149,44 @@ async def get_order_problems(
         to_order_response(order)
         for order in service.get_recent_order_problems(ORDER_PROBLEM_VISIBLE_SECONDS)
     ]
+
+
+def _to_live_status_response(live, service: DeviceControlService) -> DeviceLiveStatusResponse:
+    """
+    Arma la ficha de estado de un dispositivo para la API de usuario.
+
+    Hace lo mismo que el helper del router de desarrollador, pero vive
+    aqui para no exponer una funcion privada de otro modulo.
+    """
+    last_order = service.get_last_order(live.device_key)
+
+    return DeviceLiveStatusResponse(
+        device_key=live.device_key,
+        state=live.state,
+        online=live.online,
+        last_update=live.last_update.isoformat() if live.last_update else None,
+        last_order=to_order_response(last_order) if last_order else None,
+    )
+
+
+@router.get(
+    "/status",
+    response_model=GatewayStatusResponse,
+    summary="Conexion con el broker y ultimo estado de cada dispositivo (sin clave)",
+)
+async def get_devices_status(
+    service: DeviceControlService = Depends(get_device_control_service),
+) -> GatewayStatusResponse:
+    """
+    Lo consulta la pagina de modo sistema para pintar su panel de estado:
+    si hay conexion con el broker y como quedo cada luz y puerta. Es solo
+    lectura y, como el resto de /user, no pide clave: el backend solo
+    escucha en 127.0.0.1 (ver INCLUSIVE_API_HOST en config).
+    """
+    return GatewayStatusResponse(
+        connected=service.gateway_connected,
+        devices=[
+            _to_live_status_response(live, service)
+            for live in service.get_all_live_status()
+        ],
+    )

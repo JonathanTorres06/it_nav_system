@@ -318,7 +318,7 @@
         const key = button.dataset.key;
         const current = (devicesByKey[key]?.state || "").toLowerCase();
         const next = current === "on" ? "off" : "on";
-        await runDeviceOrder(() => SystemApi.setLight(key, next), `Luz ${nameForDevice(key)}: ${next}`);
+        await runDeviceOrder(() => SystemApi.setLight(key, next), `Luz ${nameForDevice(key)}: ${next}`, key);
     }
 
     async function onDoorListClick(event) {
@@ -327,7 +327,7 @@
         const key = button.dataset.key;
         const action = button.dataset.action;
         const holdMs = action === "open" ? DEFAULT_DOOR_HOLD_MS : null;
-        await runDeviceOrder(() => SystemApi.setDoor(key, action, holdMs), `Puerta ${nameForDevice(key)}: ${action}`);
+        await runDeviceOrder(() => SystemApi.setDoor(key, action, holdMs), `Puerta ${nameForDevice(key)}: ${action}`, key);
     }
 
     async function setAllLights(state) {
@@ -350,15 +350,48 @@
         refreshStatus();
     }
 
-    /** Ejecuta una orden manual y muestra el resultado comun. */
-    async function runDeviceOrder(sendFn, description) {
+    /** Ejecuta una orden manual, avisa que salio y luego confirma como quedo. */
+    async function runDeviceOrder(sendFn, description, deviceKey) {
         try {
             await sendFn();
-            Toast.show(`${description}. Orden enviada.`);
-            refreshStatus();
         } catch (error) {
             notifyOrderError(error);
+            return;
         }
+        Toast.show(`${description}. Orden enviada.`);
+        refreshStatus();
+        // No esperamos aqui: el resultado real (confirmada o no) llega en unos
+        // segundos y se avisa solo si hubo problema.
+        if (deviceKey) watchOrderResult(deviceKey, description);
+    }
+
+    /**
+     * Revisa como quedo la ultima orden de un dispositivo y avisa si la maqueta
+     * no respondio o reporto algo distinto. Si se confirma, no molesta: el
+     * cambio ya se ve en la lista.
+     */
+    async function watchOrderResult(deviceKey, description) {
+        for (let attempt = 0; attempt < OUTCOME_POLL_TRIES; attempt += 1) {
+            await delay(OUTCOME_POLL_MS);
+            let status;
+            try {
+                status = await SystemApi.getDevicesStatus();
+            } catch {
+                continue;
+            }
+            updateFromStatus(status);
+
+            const device = (status.devices || []).find((d) => d.device_key === deviceKey);
+            const outcome = device && device.last_order ? device.last_order.outcome : null;
+
+            if (outcome && outcome !== "pending") {
+                if (outcome !== "confirmed") {
+                    Toast.show(`${description}: ${OUTCOME_TEXT[outcome] || outcome}`);
+                }
+                return;
+            }
+        }
+        Toast.show(`${description}: sin confirmación de la maqueta.`);
     }
 
     function notifyOrderError(error) {

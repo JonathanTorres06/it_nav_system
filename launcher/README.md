@@ -11,8 +11,14 @@ desde un botón, sin abrir una terminal. Existe porque una página web servida p
    navegador (`http://127.0.0.1:8010`).
 3. Pulsa **Arrancar** en *Servicio de navegación (it_nav_system)*. El indicador
    pasa a verde cuando responde (menos de 30 s).
-4. Pulsa **Abrir modo sistema** para ir a la página de pruebas.
-5. Para probar por voz, arranca también **Mía** (tarda hasta ~120 s y necesita internet).
+4. Pulsa **Arrancar** en *Puente a la placa* para conectar el servicio con la
+   placa real. Hazlo después del broker y de la navegación.
+5. Pulsa **Abrir modo sistema** para ir a la página de pruebas.
+6. Para probar por voz, arranca también **Mía** (tarda hasta ~120 s y necesita internet).
+
+El orden recomendado es: broker (aparte) → navegación → puente → (opcional) Mía.
+El botón del puente apunta a la placa real (`192.168.4.1`). Para probar contra la
+placa falsa, arranca el puente a mano (ver el README de `hardware_bridge`).
 
 ## Qué hace por dentro (patrón de la sección 4.6)
 
@@ -20,10 +26,15 @@ desde un botón, sin abrir una terminal. Existe porque una página web servida p
   no lanza un segundo (ni lo apaga al cerrar).
 - Lanza cada servicio como **proceso oculto** con el `python.exe` del venv,
   inyectando `PYTHONUNBUFFERED` y `PYTHONUTF8`.
-- **Espera** a que responda su `/health` antes de darlo por listo.
+- **Espera** a que el servicio esté listo antes de darlo por arriba: por su
+  `/health` (navegación y Mía), por su puerto (el broker, solo observado) o por
+  que el proceso siga vivo (el puente, que no abre puerto propio).
 - Al apagar, mata el **árbol de procesos** (`taskkill /T /F`), porque el python
   de un venv suele crear un proceso hijo.
 - Solo apaga lo que él mismo arrancó. El broker no lo arranca ni lo apaga.
+
+Ojo: el **puente** y el **simulador** no deben estar arriba a la vez (los dos se
+hacen pasar por la placa `casa`). El lanzador maneja el puente, no el simulador.
 
 ## Archivos
 

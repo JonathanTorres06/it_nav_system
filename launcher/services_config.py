@@ -44,7 +44,12 @@ class ServiceConfig:
     executable: str = ""      # ruta al python del venv (solo si managed)
     args: list[str] = field(default_factory=list)
     cwd: str = ""
-    health_path: str = ""     # ruta HTTP de salud; vacio = solo se prueba el puerto TCP
+    health_path: str = ""     # ruta HTTP de salud (solo para health_mode "http")
+    # Como saber si esta vivo:
+    #   "http"    -> responde su health_path
+    #   "tcp"     -> algo escucha en host:port (ej: el broker)
+    #   "process" -> el proceso que lanzamos sigue vivo (para el puente, que no abre puerto)
+    health_mode: str = "http"
     ready_timeout_s: float = 30.0
     note: str = ""
 
@@ -93,9 +98,27 @@ BROKER_SERVICE = ServiceConfig(
     host="127.0.0.1",
     port=1883,
     managed=False,
-    health_path="",   # sin HTTP: se comprueba abriendo el puerto 1883
+    health_mode="tcp",   # sin HTTP: se comprueba abriendo el puerto 1883
     note="Se arranca aparte (Mosquitto). El lanzador solo muestra si está vivo.",
 )
 
+# Puente hacia la placa real (hermano del simulador). No abre puerto propio,
+# por eso su salud es "el proceso sigue vivo". Por defecto apunta a la placa
+# real (192.168.4.1); para probar contra la placa falsa, arrancalo a mano con
+# --board-url. Arrancalo DESPUES del broker y del servicio de navegacion.
+BRIDGE_SERVICE = ServiceConfig(
+    name="bridge",
+    label="Puente a la placa (hardware_bridge)",
+    host="127.0.0.1",
+    port=0,
+    managed=True,
+    executable=str(NAV_DIR / "venv" / "Scripts" / "python.exe"),
+    args=["-m", "hardware_bridge"],
+    cwd=str(NAV_DIR),
+    health_mode="process",
+    ready_timeout_s=10.0,
+    note="Conecta el servicio con la placa real. Arrancalo tras el broker y la navegación.",
+)
+
 # Orden en el que se muestran en la pagina
-SERVICES: list[ServiceConfig] = [BROKER_SERVICE, NAV_SERVICE, MIA_SERVICE]
+SERVICES: list[ServiceConfig] = [BROKER_SERVICE, NAV_SERVICE, BRIDGE_SERVICE, MIA_SERVICE]

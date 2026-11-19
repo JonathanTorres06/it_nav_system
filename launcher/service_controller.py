@@ -78,11 +78,20 @@ class ServiceController:
 
     def _health_ok(self) -> bool:
         """
-        True si el servicio esta listo.
-
-        Si expone /health se usa HTTP (2xx); si no, basta con que el puerto
-        este abierto (asi se observa el broker, que no habla HTTP).
+        True si el servicio esta listo, segun su modo de salud:
+            - "process": el proceso que lanzamos sigue vivo (el puente no abre puerto).
+            - "tcp": algo escucha en host:puerto (asi se observa el broker).
+            - "http": responde su health_path con un 2xx.
         """
+        mode = self._config.health_mode
+
+        if mode == "process":
+            process = self._process
+            return process is not None and process.poll() is None
+
+        if mode == "tcp":
+            return self._tcp_open()
+
         url = self._config.health_url
         if not url:
             return self._tcp_open()
